@@ -1,0 +1,303 @@
+
+.flow-container {
+  display: flex;
+  height: calc(100vh - 20px);
+  color: #606266;
+  background: #fff;
+  padding: 10px 0;
+}
+
+.flow-detail {
+  flex: 1;
+  border: 1px solid #EBEEF5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+  word-break: break-all;
+  border-radius: 4px;
+  position: relative;
+  background-image: linear-gradient(90deg, rgba(158, 158, 158, 0.17) 10%, rgba(0, 0, 0, 0) 10%), linear-gradient(rgba(158, 158, 158, 0.17) 10%, rgba(0, 0, 0, 0) 10%);
+  background-size: 10px 10px;
+}
+
+#flowContent {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.item {
+  position: absolute;
+  width: 60px;
+  height: 90px;
+  border: 1px solid #007AFF;
+}
+
+.flow-menu {
+  width: 120px;
+  border: 1px solid #EBEEF5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+  word-break: break-all;
+  border-radius: 4px;
+}
+.flow-menu-title{
+  margin: 0;
+  padding-left: 10px;
+  font-size: 14px;
+  color: #2196F3;
+  line-height: 35px;
+  background: #f5f6f8;
+  border-bottom: 1px solid #009688;
+}
+.flow-menu-container{
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+
+.circle-start-legend {
+  display: inline-block;
+  width:30px;
+  height:30px;
+  background-color: #a1de8e;
+  border-radius: 15px;
+  border: 1px solid #009688;
+}
+
+.circle-end-legend {
+  display: inline-block;
+  width:30px;
+  height:30px;
+  background-color: #d58887;
+  border-radius: 15px;
+  border: 1px solid #009688;
+}
+.diamond-legend {
+  display: inline-block;
+  width:25px;
+  height:25px;
+  background-color: #f0f06d;
+  transform: rotate(45deg);
+  border: 1px solid #009688;
+}
+
+.rectangle-legend {
+  display: inline-block;
+  width:30px;
+  height:25px;
+  background-color: #8fb8dd;
+  border-radius: 8px;
+  border: 1px solid #009688;
+}
+
+.flow-icon{
+  width: 28px;
+  text-align: center;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 110px;
+  padding: 6px;
+  border-bottom: 1px solid #ccc;
+  i{
+    //color: #2196F3;
+    font-size: 18px !important;
+    margin-left: 8px;
+  }
+  span{
+    display: inline-block;
+    padding-left: 10px;
+  }
+}
+.menu-item-move{
+  cursor: move;
+}
+
+
+.flow-edit {
+  width: 300px;
+  padding: 0 10px;
+}
+
+.flow-edit-content {
+  background: #FFF;
+  color: #606266;
+  line-height: 1.4;
+  text-align: justify;
+  font-size: 14px;
+  border: 1px solid #EBEEF5;
+  padding: 12px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+  word-break: break-all;
+  border-radius: 4px;
+}
+
+.connect-line {
+  font-size: 12px !important;
+  //color: #409eff !important;
+}
+.flow-main-menu {
+  height: 35px;
+  background: #e6e9ec;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  .tool-icon{
+    font-size: 20px;
+    color: #2395f3;
+    padding: 0 6px;
+    cursor: pointer;
+  }
+}
+
+
+.circle-start {
+  display: inline-block;
+  width:60px;
+  height:60px;
+  background-color: #a1de8e;
+  border-radius: 30px;
+  border: 1px solid #009688;
+}
+
+.circle-end {
+  display: inline-block;
+  width:60px;
+  height:60px;
+  background-color: #d58887;
+  border-radius: 30px;
+  border: 1px solid #009688;
+}
+.diamond {
+  display: inline-block;
+  width:50px;
+  height:50px;
+  background-color: #f0f06d;
+  transform: rotate(45deg);
+  border: 1px solid #009688;
+}
+
+.rectangle {
+  display: inline-block;
+  width:130px;
+  height:55px;
+  background-color: #8fb8dd;
+  border-radius: 8px;
+  border: 1px solid #009688;
+}
+
+
+.flow-node-item {
+  cursor: move;
+}
+
+.flow-node-con {
+  position: relative;
+  text-align: center;
+  i{
+    cursor: pointer;
+  }
+  .flow-icon-text{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -60%);
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+}
+
+.flow-node-icon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  line-height: 20px;
+}
+
+.flow-node-del {
+  position: absolute;
+  color: red;
+  font-size: 16px;
+  cursor: pointer;
+  top: -8px;
+  right: -8px;
+}
+.flow-node-drag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: crosshair;
+}
+
+
+
+
+
+/* --- jsPlumb setup ---------------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------------------------------- */
+
+.jtk-connector {
+  z-index: 9;
+}
+
+.jtk-endpoint {
+  z-index: 12;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.jtk-overlay {
+  background-color: white;
+  color: #434343;
+  font-weight: 400;
+  padding: 4px;
+  z-index: 10;
+}
+
+.jtk-overlay.jtk-hover {
+  color: #434343;
+}
+
+path {
+  cursor: pointer;
+}
+
+.delete {
+  padding: 2px;
+  cursor: pointer;
+  float: left;
+  font-size: 10px;
+  line-height: 20px;
+}
+
+.add,
+.edit {
+  cursor: pointer;
+  float: right;
+  font-size: 10px;
+  line-height: 20px;
+  margin-right: 2px;
+  padding: 2px;
+}
+
+.edit:hover {
+  color: #ff8000;
+}
+
+.selected-mode {
+  color: #E4F013;
+}
+
+
+
+
+
