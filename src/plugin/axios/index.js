@@ -26,13 +26,13 @@ function errorLog (error) {
     console.log(error)
   }
   // 显示提示
-  Message({
-    message: error.message,
-    type: 'error',
-    duration: 5 * 1000
-  })
+  // Message({
+  //   message: error.message,
+  //   type: 'error',
+  //   duration: 5 * 1000
+  // })
 }
-console.log(33, process.env.VUE_APP_API)
+
 // 创建一个 axios 实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_API,
@@ -40,14 +40,14 @@ const service = axios.create({
     'Content-Type': 'application/json;charset=UTF-8'
     // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
   },
-  timeout: 5000 // 请求超时时间
+  timeout: 500000 // 请求超时时间
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
     // 在请求发送之前做一些处理
-    if (config.url !== '/login') {
+    if (config.url !== '/login' && config.url !== '/agentInfo/register' && config.url !== '/mail' && config.url !== '/mail/checkVerifyCode' && config.url !== '/mail/updatePassword') {
       const token = util.cookies.get('token')
       // 让每个请求携带token-- ['Authorization']为自定义key 请根据实际情况自行修改
       config.headers['Authorization'] = 'Bearer' + ' ' + token
@@ -56,7 +56,6 @@ service.interceptors.request.use(
       //  给data赋值以绕过if判断
       config.data = true
     }
-    console.log('99999', config)
     return config
   },
   error => {
@@ -70,17 +69,14 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     // dataAxios 是 axios 返回数据中的 data
-    console.log('888888888888',response)
     const dataAxios = response.data
+    // console.log('======44444====:', dataAxios)
     // 这个状态码是和后端约定的
     const { code } = dataAxios
-    console.log('====111111', code, dataAxios)
     // 根据 code 进行判断 application/octet-stream
     if (response.headers['content-type'] === 'application/vnd.ms-excel;charset=utf-8' || response.headers['content-type'] === 'application/octet-stream') { // 文件
-      console.log('499999999999999999')
       return response
     } else if (code === undefined) {
-      console.log('999999999999999999999999999999')
       // 如果没有 code 代表这不是项目后端开发的接口 比如可能是 D2Admin 请求最新版本
       return dataAxios
     } else {
@@ -88,10 +84,13 @@ service.interceptors.response.use(
       switch (code) {
         case 100:
           // [ 示例 ] code === 0 代表没有错误
-          return dataAxios.data
-        case 'xxx':
-          // [ 示例 ] 其它和后台约定的 code
-          errorCreate(`[ code: xxx ] ${dataAxios.msg}: ${response.config.url}`)
+          // return dataAxios.data
+          return dataAxios
+        case 233:
+          Message({
+            message: dataAxios.message,
+            type: 'error'
+          })
           break
         default:
           // 不是正确的 code

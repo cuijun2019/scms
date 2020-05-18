@@ -48,6 +48,9 @@ util.urlExp = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/ // url
 util.emailExp = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/ // 邮箱
 util.idCardExp = /^(([1][1-5])|([2][1-3])|([3][1-7])|([4][1-6])|([5][0-4])|([6][1-5])|([7][1])|([8][1-2]))\d{4}(([1][9]\d{2})|([2]\d{3}))(([0][1-9])|([1][0-2]))(([0][1-9])|([1-2][0-9])|([3][0-1]))\d{3}[0-9xX]$/ // 身份证
 util.faxExp = /^(\d{3,4}-)?\d{7,8}$/ // 传真
+util.floatNum = /^[1-9][0-9]*([.][0-9]+)?$/ // 非零开头的整数或小数
+util.pwdExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{8,16}$/ // 密码由 8-16位字母、数字、特殊符号组成
+util.creditCode = /[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}/ // 统一社会信用代码
 
 util.isMobile = (number) => {
   return util.mobileExp.test(number)
@@ -56,7 +59,38 @@ util.isMobileTelExp = (number) => {
   return util.mobileTelExp.test(number)
 }
 
+util.floatNumExp = (str) => {
+  return util.floatNum.test(str)
+}
+
+util.isMoneyExp = (str) => {
+  return util.moneyExp.test(str)
+}
+
+util.isIdCardExp = (str) => {
+  return util.idCardExp.test(str)
+}
+util.isFaxExp = (str) => {
+  return util.faxExp.test(str)
+}
+util.isPwdExp = (str) => {
+  return util.pwdExp.test(str)
+}
+util.isCreditCode = (str) => {
+  return util.creditCode.test(str)
+}
+
 /** 正则end**/
+
+/**
+ * 附件文件，替换路径。
+ * @param str
+ * @returns {*}
+ */
+util.fileUrl = (str) => {
+  // return str.replace(/\/data\/nginx\/html/, 'http://47.105.181.143:8780')
+  return str.replace(/\/data\/nginx\/html/, '/api')
+}
 
 util.currency = function () {
   let data = [
@@ -213,6 +247,41 @@ util.formatTime = function (date) {
 
 /**
  *
+ *数组转菜单tree
+ */
+util.composeMenuTree = function (list = []) {
+  const data = JSON.parse(JSON.stringify(list)) // 浅拷贝不改变源数据
+  const result = []
+  if (!Array.isArray(data)) {
+    return result
+  }
+  const map = {}
+  data.forEach(item => {
+    item.path = item.menuUrl
+    item.title = item.menuName
+    item.id = item.permId
+    map[item.permId] = item
+  })
+  data.forEach(item => {
+    item.path = item.menuUrl
+    item.title = item.menuName
+    item.id = item.permId
+    const parent = map[item.parentPermId]
+    if (parent) {
+      if ((item.menuUrl).split('/').length - 1 === 3) {
+        (parent.menuBtn || (parent.menuBtn = [])).push(item)
+      } else {
+        (parent.children || (parent.children = [])).push(item)
+      }
+    } else {
+      result.push(item)
+    }
+  })
+  return result
+}
+
+/**
+ *
  *数组转tree
  */
 util.composeTree = function (list = []) {
@@ -242,12 +311,15 @@ util.composeTree = function (list = []) {
 }
 
 /**
- * url 下载url
- * data 下载的参数
+ *文件下载
+ * @param url 下载url
+ * @param data 下载的参数
+ * @param method GET POST
  */
-util.download = function (url, data) {
+util.download = function (url, data, method = 'GET') {
+  console.log('===5555', url, data)
   let xhr = new XMLHttpRequest()
-  xhr.open('GET', '/scms' + url, true)
+  xhr.open(method, '/api' + url, true)
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
   xhr.setRequestHeader('Authorization', 'Bearer' + ' ' + util.cookies.get('token'))
   xhr.setRequestHeader('version', '2')
@@ -275,13 +347,64 @@ util.download = function (url, data) {
       })
     }
   }
-  xhr.send() // 发送ajax请求
+  xhr.send(method == 'POST' ? (data ? JSON.stringify(data) : '') : '') // 发送ajax请求
 }
 
 /**
- * 下载图片
+ * excel 文件数据读取
+ * @param file 文件对象
+ * @param keyObj 对应的可以表头
+ * @returns {Promise<any>}
  */
-// util.downloadFile = function (data) {
-//   util.download('/download/')
-// }
+util.readXLSXData = function (file, keyObj) {
+  return new Promise(function (resolve, reject) {
+    let rABS = false // 是否将文件读取为二进制字符串
+    let f = file
+    let reader = new FileReader()
+    FileReader.prototype.readAsBinaryString = function (f) {
+      let binary = ''
+      let rABS = false // 是否将文件读取为二进制字符串
+      let wb // 读取完成的数据
+      let outdata
+      let reader = new FileReader()
+      reader.onload = function (e) {
+        let bytes = new Uint8Array(reader.result)
+        let length = bytes.byteLength
+        for (var i = 0; i < length; i++) {
+          binary += String.fromCharCode(bytes[i])
+        }
+        let XLSX = require('xlsx')
+        if (rABS) {
+          wb = XLSX.read(btoa(fixdata(binary)), { // 手动转化
+            type: 'base64'
+          })
+        } else {
+          wb = XLSX.read(binary, {
+            type: 'binary'
+          })
+        }
+        outdata = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])// outdata就是读取excel内容之后输出的东西
+        this.fileData = [...outdata]
+        this.xlsxData = []
+        this.fileData.map(item => {
+          let obj = {}
+          for (let key in item) {
+            if (item.hasOwnProperty(key)) {
+              obj[keyObj[key]] = item[key]
+            }
+          }
+          this.xlsxData.push(obj)
+        })
+        resolve(this.xlsxData)
+      }
+      reader.readAsArrayBuffer(f)
+    }
+    if (rABS) {
+      reader.readAsArrayBuffer(f)
+    } else {
+      reader.readAsBinaryString(f)
+    }
+  })
+}
+
 export default util

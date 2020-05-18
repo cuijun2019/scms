@@ -1,10 +1,14 @@
-
-// 分页设置
-
+/**
+ *  分页设置
+ * @type {number[]}
+ */
 export const pageSizes = [10, 15, 30, 35]
 export const pageSize = pageSizes[0]
 
-// 日志类型 type:(0：新增，1：修改，2：查询，3：删除)
+/**
+ * 日志类型 type:(0：新增，1：修改，2：查询，3：删除)
+ * @type {{insert: number, update: number, select: number, delete: number}}
+ */
 export const logType = {
   insert: 0,
   update: 1,
@@ -12,7 +16,10 @@ export const logType = {
   delete: 3
 }
 
-// 角色类型 1：供应商 2：代理商 3：采购人 4：采购人领导 5：招标中心经办人 6：招标中心科长 7：系统管理员
+/**
+ * 角色类型 1：供应商 2：代理商 3：采购人 4：采购人领导 5：招标中心经办人 6：招标中心科长 7：系统管理员
+ * @type {*[]}
+ */
 export const roleType = [
   {
     name: '供应商',
@@ -44,7 +51,10 @@ export const roleType = [
   }
 ]
 
-// 企业性质
+/**
+ * 企业性质
+ * @type {*[]}
+ */
 export const hopeType = [
   {
     name: '国有企业',
@@ -83,23 +93,10 @@ export const hopeType = [
     value: '股份有限公司'
   }
 ]
-// 缺的菜单图标
 
-// 询价管理 XJGL    一级菜单
-// 我的询价记录 WDXJJJ  二级菜单
-//
-// 我的供货商 WDGYS   二级菜单 （它的一级菜单是供应商管理）
-//
-// 采购结果通知书 CGJGTZS  一级菜单
-// 我的采购结果通知书 WDCGJGTZS 二级菜单
-//
-// 成交通知书 CJTZS  一级菜单
-//
-// 合同管理 HTGL   一级菜单 （它的二级菜单是我的合同）
-//
-// 模板管理 MBGL   一级菜单
-// 采购结果通知书模板 CGZGTZSMB 二级菜单
-// 成交通知书模板 CJTZSMB   二级菜单
-// 合同模板 HTMB   二级菜单
-//
-// 已办  ===没有选择状态的图标 YB-XZ  （它的一级菜单是首页）
+/**
+ * 审核状态
+ * 1 草稿 2 审核中 3同意 4退回 5完成
+ * @type {string[]}
+ */
+export const statusTxt = ['','草稿','审核中','同意','退回','完成']

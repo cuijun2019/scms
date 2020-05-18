@@ -41,6 +41,13 @@ export default {
      */
     openedLoad ({ state, commit, dispatch }) {
       return new Promise(async resolve => {
+        // info 信息
+        const userInfo = await dispatch('d2admin/db/get', {
+          dbName: 'sys',
+          path: 'user.info',
+          defaultValue: {},
+          user: true
+        }, { root: true })
         // store 赋值
         const value = await dispatch('d2admin/db/get', {
           dbName: 'sys',
@@ -48,6 +55,7 @@ export default {
           defaultValue: setting.page.opened,
           user: true
         }, { root: true })
+
         // 在处理函数中进行数据优化 过滤掉现在已经失效的页签或者已经改变了信息的页签
         // 以 fullPath 字段为准
         // 如果页面过多的话可能需要优化算法
@@ -55,15 +63,20 @@ export default {
         const valid = []
         // 处理数据
         state.opened = value.map(opened => {
-          // 忽略首页
-          if (opened.fullPath === '/index') {
-            valid.push(1)
-            return opened
+          if (Object.keys(userInfo).length) {
+            if (!(userInfo.roles[0].id === 7 || userInfo.roles[0].id === 6)) { // 招标中心经办人科长和管理员没有首页
+              // 忽略首页
+              if (opened.fullPath === '/index') {
+                valid.push(1)
+                return opened
+              }
+            }
           }
           // 尝试在所有的支持多标签页的页面里找到 name 匹配的页面
           const find = state.pool.find(item => item.name === opened.name)
           // 记录有效或无效信息
-          valid.push(find ? 1 : 0)
+          // valid.push(find ? 1 : 0)
+          valid.push(find ? 0 : 0) // 统一改为不缓存
           // 返回合并后的数据 新的覆盖旧的
           // 新的数据中一般不会携带 params 和 query, 所以旧的参数会留存
           return Object.assign({}, opened, find)

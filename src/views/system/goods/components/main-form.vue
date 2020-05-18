@@ -11,22 +11,22 @@
           </template>
           <div class="collapse-content">
               <div class="form-con">
-                <el-form :model="form" :rules="rules" ref="form" label-width="130px"  size="mini" class="project-basic-form">
+                <el-form :model="form" :rules="rules" ref="form" label-width="150px"  size="medium" class="project-basic-form">
                   <div class="form-container">
-                    <div class="form-wrapper margin-right-65">
+                    <div class="form-wrapper margin-right-45">
                       <el-form-item label="货物序号：" prop="cargoSerial">
                         <el-input v-model="form.cargoSerial"  disabled placeholder="自动生成"></el-input>
                       </el-form-item>
                       <el-form-item label="货物名称：" prop="cargoName">
-                        <el-input v-model="form.cargoName" clearable required></el-input>
+                        <el-input v-model="form.cargoName" clearable required :disabled="disabled"></el-input>
                       </el-form-item>
                       <el-form-item label="品牌：" prop="brand">
-                        <el-input v-model="form.brand" clearable required></el-input>
+                        <el-input v-model="form.brand" clearable required :disabled="disabled"></el-input>
                       </el-form-item>
                     </div>
-                    <div class="form-wrapper margin-left-65">
+                    <div class="form-wrapper margin-left-45">
                       <el-form-item label="货物品目：" prop="itemName">
-                        <el-select v-model="form.itemName" ref="goodsTree" filterable :filter-method='dataFilter' @clear="handleClear" placeholder="请选择" clearable required>
+                        <el-select v-model="form.itemName" ref="goodsTree" filterable :filter-method='dataFilter' @clear="handleClear" :disabled="disabled" placeholder="请选择" clearable required>
                           <el-option
                             :value="brandData"
                             style="height: auto;padding: 0">
@@ -50,22 +50,17 @@
                         <el-input v-model="form.cargoCode" disabled placeholder="自动生成"></el-input>
                       </el-form-item>
                       <el-form-item label="型号：" prop="model">
-                        <el-input v-model="form.model" clearable required></el-input>
+                        <el-input v-model="form.model" clearable required  :disabled="disabled"></el-input>
                       </el-form-item>
                     </div>
                   </div>
-                  <div>
-                    <el-form-item label="主要参数" prop="mainParams">
-                      <el-input  type="textarea" v-model="form.mainParams" clearable required></el-input>
-                    </el-form-item>
-                  </div>
                   <div class="form-container">
-                    <div class="form-wrapper margin-right-65">
+                    <div class="form-wrapper margin-right-45">
                       <el-form-item label="产地：" prop="manufactor">
-                        <el-input v-model="form.manufactor" clearable required></el-input>
+                        <el-input v-model="form.manufactor" clearable required :disabled="disabled"></el-input>
                       </el-form-item>
                       <el-form-item label="币种：" prop="currency">
-                        <el-select v-model="form.currency" placeholder="请选择币种" clearable required>
+                        <el-select v-model="form.currency" placeholder="请选择币种" clearable required :disabled="disabled">
                           <el-option
                             v-for="(item, index) in currencyData"
                             :key="index"
@@ -75,22 +70,33 @@
                         </el-select>
                       </el-form-item>
                     </div>
-                    <div class="form-wrapper margin-left-65">
+                    <div class="form-wrapper margin-left-45">
                       <el-form-item label="进口/国产类别：" prop="type">
-                        <el-select v-model="form.type" placeholder="请选择进口/国产类别" clearable required>
+                        <el-select v-model="form.type" placeholder="请选择进口/国产类别" clearable required :disabled="disabled">
                           <el-option label="进口" value="进口"></el-option>
                           <el-option label="国产" value="国产"></el-option>
                         </el-select>
                       </el-form-item>
                       <el-form-item label="维保率/月：" prop="guaranteeRate">
-                        <el-input v-model="form.guaranteeRate" clearable required></el-input>
+                        <el-input v-model="form.guaranteeRate" clearable required :disabled="disabled"></el-input>
                       </el-form-item>
                     </div>
+                  </div>
+                  <div>
+                    <el-form-item label="主要参数：" prop="mainParams">
+                      <el-input  type="textarea" v-model="form.mainParams" clearable required :disabled="disabled"></el-input>
+                    </el-form-item>
+                  </div>
+                  <div>
+                    <el-form-item label="备注：" prop="remark">
+                      <el-input type="textarea"   v-model="form.remark" clearable :disabled="disabled"></el-input>
+                    </el-form-item>
                   </div>
                   <div>
                     <el-form-item label="证明文件：" prop="delivery">
                       <!--<el-input v-model="form.name" ></el-input>-->
                       <el-upload
+                        :disabled="disabled"
                         class="upload-container-inline"
                         ref="upload"
                         action=""
@@ -103,13 +109,8 @@
                       </el-upload>
                     </el-form-item>
                   </div>
-                  <div>
-                    <el-form-item label="备注：" prop="remark">
-                      <el-input type="textarea"   v-model="form.remark" clearable></el-input>
-                    </el-form-item>
-                  </div>
                   <div class="form-container">
-                    <div class="form-wrapper margin-right-65">
+                    <div class="form-wrapper margin-right-45">
                       <el-form-item label="创建人：" prop="creator">
                         <p>{{form.creator}}</p>
                       </el-form-item>
@@ -117,7 +118,7 @@
                         <p>{{form.maintenanceMan}}</p>
                       </el-form-item>
                     </div>
-                    <div class="form-wrapper margin-left-65">
+                    <div class="form-wrapper margin-left-45">
                       <el-form-item label="创建时间：" prop="createDate">
                         <p>{{form.createDate}}</p>
                       </el-form-item>
@@ -139,14 +140,14 @@
              <i class="list-icon"></i>
              <span class="list-title">配置信息</span>
            </div>
-           <div class="table-tool-btn">
-             <el-button class="tool-basic-btn" size="mini" @click="handleAdd">新增</el-button>
+           <div class="table-tool-btn" v-if="!disabled">
+             <el-button class="tool-basic-btn" size="mini" @click="handleAdd" :disabled="disabled">新增</el-button>
              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看/编辑</el-button>
-             <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
+             <el-button size="mini" class="tool-delete-btn" @click="handleDelete" :disabled="disabled">删除</el-button>
              <el-button class="tool-download-btn" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
-             <div class="upload-div">
-               <input type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="upload-input"  ref="importFile" @change="handleUpload">
-               <el-button class="tool-import-btn upload-btn" size="mini">导入</el-button>
+             <div class="upload-div" style="margin-left: 12px;">
+               <input :disabled="disabled" type="file" accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"  class="upload-input"  ref="importFile" @change="handleUpload">
+               <el-button class="tool-import-btn upload-btn" size="mini" :disabled="disabled">导入</el-button>
              </div>
            </div>
          </div>
@@ -154,7 +155,7 @@
            <el-table
              :loading="partLoading"
              border
-             size="mini"
+             size="medium"
              :row-class-name="tableRowClassName"
              height="260"
              :data="listParams.type ===1 ? partTableData.slice((pageInfo.currentPage-1)*pageInfo.pageSize,pageInfo.currentPage*pageInfo.pageSize): partTableData"
@@ -176,25 +177,25 @@
              <el-table-column
                prop="partCode"
                label="配件编号"
-               width="210"
+               width="280"
                align="center">
              </el-table-column>
              <el-table-column
                prop="partName"
                label="设备或配件名称"
-               width="120"
+               width="280"
                align="center">
              </el-table-column>
              <el-table-column
                prop="standards"
                label="型号/规格"
-               width="120"
+               width="180"
                align="center">
              </el-table-column>
              <el-table-column
                prop="manufactor"
                label="产地/厂家"
-               width="120"
+               width="180"
                align="center">
              </el-table-column>
              <el-table-column
@@ -213,36 +214,36 @@
              <el-table-column
                prop="unit"
                label="单位"
-               width="120"
+               width="280"
                align="center">
              </el-table-column>
              <el-table-column
                prop="quantity"
                label="数量"
-               width="120"
+               width="180"
                align="center">
              </el-table-column>
              <el-table-column
                prop="price"
                label="单价"
-               width="120"
+               width="180"
+               align="center">
+             </el-table-column>
+             <el-table-column
+               prop="total"
+               label="总价"
+               width="180"
                align="center">
              </el-table-column>
              <el-table-column
                prop="remark"
                label="备注"
-               width="120"
-               align="center">
-             </el-table-column>
-             <el-table-column
-               prop="status"
-               label="总价"
-               width="120"
                align="center">
              </el-table-column>
            </el-table>
            <div class="table-paging">
              <el-pagination
+               background
                @size-change="handleSizeChange"
                @current-change="handleCurrentChange"
                :current-page="pageInfo.currentPage"
@@ -254,9 +255,11 @@
            </div>
          </div>
          <div class="form-tool">
-           <el-button class="form-submit-btn btn-width-90" v-if="listParams.type === 1">提交审核</el-button>
-           <el-button class="form-submit-btn btn-width-90" v-if="listParams.type === 1" @click="handleSaveGoods('form')">保存</el-button>
-           <el-button class="form-close-btn btn-width-90" @click="handleClose">关闭</el-button>
+           <el-button class="form-submit-btn btn-width-120" v-if="!disabled" @click="handleSaveGoods('form',1)">保存</el-button>
+           <el-button class="form-submit-btn btn-width-120" v-if="!disabled"  @click="handleSaveGoods('form',2)">提交审核</el-button>
+           <el-button class="form-submit-btn btn-width-120" v-if="!auditDisabled" @click="handleSaveGoods('form',3)">同意</el-button>
+           <el-button class="form-submit-btn btn-width-120" v-if="!auditDisabled"  @click="handleSaveGoods('form',4)">退回</el-button>
+           <el-button class="form-close-btn btn-width-120" @click="handleClose">关闭</el-button>
          </div>
        </div>
      </div>
@@ -274,57 +277,57 @@
           <span class="header-title">配件信息</span>
         </div>
         <div>
-          <el-button class="dialog-basic-btn" @click="handleSavePartForm('partForm')">保存</el-button>
-          <el-button class="dialog-reset-btn" @click="resetForm('partForm')">重置</el-button>
-          <el-button class="dialog-close-btn" @click="isVisible = false">关闭</el-button>
+          <el-button class="dialog-basic-btn" v-if="!disabled" @click="handleSavePartForm('partForm')">保存</el-button>
+          <el-button class="dialog-reset-btn" v-if="!disabled" @click="resetForm('partForm')">重置</el-button>
+          <el-button class="dialog-close-btn"  @click="handleCloseD">关闭</el-button>
         </div>
       </div>
       <div class="form-con">
-        <el-form :model="formPart" :rules="rulesPart" ref="partForm" label-width="135px"  size="mini" class="basic-form">
+        <el-form :model="formPart" :rules="rulesPart" ref="partForm" label-width="150px"  size="medium" class="basic-form">
           <div class="form-container">
-            <div class="form-wrapper margin-right-65">
+            <div class="form-wrapper margin-right-45">
               <el-form-item label="配件编号：" prop="partCode">
                 <el-input v-model="formPart.partCode" disabled></el-input>
               </el-form-item>
               <el-form-item label="型号/规格：" prop="standards">
-                <el-input v-model="formPart.standards"  clearable required></el-input>
+                <el-input v-model="formPart.standards"  clearable required :disabled="disabled"></el-input>
               </el-form-item>
             </div>
-            <div class="form-wrapper margin-left-65">
+            <div class="form-wrapper margin-left-45">
               <el-form-item label="设备或配件名称：" prop="partName">
-                <el-input v-model="formPart.partName" clearable required></el-input>
+                <el-input v-model="formPart.partName" clearable required :disabled="disabled"></el-input>
               </el-form-item>
               <el-form-item label="产地/厂家：" prop="manufactor">
-                <el-input v-model="formPart.manufactor"  clearable required></el-input>
+                <el-input v-model="formPart.manufactor"  clearable required :disabled="disabled"></el-input>
               </el-form-item>
             </div>
           </div>
           <div>
             <el-form-item label="主要技术参数" prop="techParams">
-              <el-input  type="textarea" v-model="formPart.techParams"  clearable required></el-input>
+              <el-input  type="textarea" v-model="formPart.techParams"  clearable required :disabled="disabled"></el-input>
             </el-form-item>
           </div>
           <div class="form-container">
-            <div class="form-wrapper margin-right-65">
+            <div class="form-wrapper margin-right-45">
               <el-form-item label="单位：" prop="unit">
-                <el-input v-model="formPart.unit"  clearable required></el-input>
+                <el-input v-model="formPart.unit"  clearable required :disabled="disabled"></el-input>
               </el-form-item>
               <el-form-item label="单价：" prop="price">
-                <el-input v-model="formPart.price"  clearable required></el-input>
-              </el-form-item>
-              <el-form-item label="备注：" prop="remark">
-                <el-input v-model="formPart.remark"  clearable ></el-input>
+                <el-input v-model="formPart.price"  clearable required :disabled="disabled" @input="(value) =>{handleInput(value)}"></el-input>
               </el-form-item>
             </div>
-            <div class="form-wrapper margin-left-65">
+            <div class="form-wrapper margin-left-45">
               <el-form-item label="数量：" prop="quantity">
-                <el-input v-model.number="formPart.quantity"  clearable required></el-input>
+                <el-input v-model.number="formPart.quantity"  clearable required :disabled="disabled" @input="(value) =>{handleInput(value)}"></el-input>
               </el-form-item>
-              <el-form-item label="总价：" prop="name">
-                <el-input v-model="formPart.name"  clearable></el-input>
+              <el-form-item label="总价：" prop=" total">
+                <el-input v-model="formPart.total"  clearable disabled></el-input>
               </el-form-item>
             </div>
           </div>
+          <el-form-item label="备注：" prop="remark">
+            <el-input v-model="formPart.remark"  type="textarea" clearable :disabled="disabled"></el-input>
+          </el-form-item>
         </el-form>
       </div>
     </el-dialog>
@@ -332,15 +335,10 @@
 </template>
 
 <script>
-import {
-  Upload
-} from '@/api/sys.global'
-import {
-  FetchBrand,
-  FetchPartInfo,
-  FetchCargoInfo,
-  PartInfoUpload
-} from '@/api/sys.goods'
+import { Upload } from '@/api/sys.global'
+import { FetchBrand, FetchPartInfo, FetchCargoInfo, PartInfoUpload } from '@/api/sys.goods'
+import { getDataAuditStatus, fetchAuditData, fetchStartModifyAuditData, modifyAndAddAuditData } from '@/libs/flowAudit'
+import { FetchUserByRoleId } from '@/api/sys.system'
 import util from '@/libs/util'
 import { mapState, mapActions } from 'vuex'
 export default {
@@ -354,6 +352,18 @@ export default {
     }
   },
   data () {
+    let checkMoneyNum = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('单价不能为空！'))
+      }
+      setTimeout(() => {
+        if (!util.isMoneyExp(value)) {
+          callback(new Error('单价格式不对!'))
+        } else {
+          callback()
+        }
+      }, 1000)
+    }
     return {
       name: '',
       filename: '',
@@ -385,6 +395,7 @@ export default {
         }
       ],
       form: {
+        status: '',
         cargoId: '',
         cargoSerial: '',
         cargoCode: '',
@@ -446,6 +457,7 @@ export default {
         quantity: '',
         price: '',
         remark: '',
+        total: '',
         cargoInfo: {
           cargoId: ''
         }
@@ -471,9 +483,11 @@ export default {
           { type: 'number', message: '数量必须为数字值' }
         ],
         price: [
-          { required: true, message: '请填写单价', trigger: 'blur' }
+          { required: true, message: '请填写单价', trigger: 'blur' },
+          { validator: checkMoneyNum, trigger: 'blur' }
         ]
       },
+      partnerInfo: {},
       fileList: [],
       attachId: '',
       tableData: [],
@@ -497,16 +511,19 @@ export default {
         total: 0,
         currentPage: 1
       },
-      partFile: {}
+      partFile: {},
+      disabled: false,
+      jingBanRen: '',
+      jingbankezhang: '',
+      auditDisabled: true,
+      auditData: {}
     }
   },
   created () {
-    console.log('==========4444444', this.$route.params.cargoId)
     if (this.$route.params.cargoId) {
       this.fetchDetailData(this.$route.params.cargoId)
       this.fetchPartListData(this.$route.params.cargoId)
     }
-    this.fetchBrandList()
   },
   filters: {},
   watch: {
@@ -514,23 +531,31 @@ export default {
       immediate: true, // 这句重要
       handler (val) {
         if (val) {
-          // switch (val.type) {
-          //   case 1:
-          //     this.$set(this.columns, 0, { title: '待办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '待办主题', key: 'name' })
-          //     break
-          //   case 2:
-          //     this.$set(this.columns, 0, { title: '已办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '已办主题', key: 'name' })
-          //     break
-          // }
+          if (val.type === 3) {
+            this.disabled = true
+          } else {
+            this.fetchBrandList()
+          }
         }
       }
-
+    },
+    info: {
+      immediate: true, // 这句重要
+      handler (val) {
+        if (Object.keys(val).length) {
+          this.fetchUserByRoleId()
+          if (val.roles[0].id === 5 || val.roles[0].id === 6) {
+            this.auditDisabled = false
+          }
+        }
+      }
     }
 
   },
   computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ]),
     ...mapState('d2admin/page', [
       'opened',
       'current' // 用户获取当前页面的地址，用于关闭
@@ -547,45 +572,93 @@ export default {
       this.multipleSelection = val
     },
     fetchDetailData (id) {
-      FetchCargoInfo('get', id, true).then((res) => {
-        console.log('=====', res)
-        this.form = res
-        this.form.createDate = util.formatTime(res.createDate)
-        this.form.maintenanceDate = util.formatTime(res.maintenanceDate)
-        this.fileList = [{
-          name: res.attachment.attachName
-        }]
-        this.form.attachment.attachId = res.attachment.attachId
+      FetchCargoInfo('get', id, true).then(async (res) => {
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.form = respondData
+          this.form.createDate = util.formatTime(respondData.createDate)
+          this.form.maintenanceDate = util.formatTime(respondData.maintenanceDate)
+          this.partnerInfo = respondData.partnerInfo
+
+          if (respondData.attachment) {
+            this.fileList = [{
+              name: respondData.attachment.attachName
+            }]
+            this.form.attachment.attachId = respondData.attachment.attachId
+          } else {
+            this.form.attachment = {
+              attachId: ''
+            }
+          }
+          let dataParams = {
+            businessType: 'cargoAudit',
+            businessId: respondData.cargoId,
+            parentActor: this.info.username
+          }
+          let resData = await getDataAuditStatus(dataParams)
+          if (resData) {
+            this.auditData = resData
+            if (this.info.roles[0].id === 1) { // 供应商
+              this.disabled = false
+            } else if (this.info.roles[0].id === 5) { // 招标中心经办人
+              this.disabled = true
+              this.auditDisabled = false
+            } else if (this.info.roles[0].id === 6) { // 招标中心科长
+              this.disabled = true
+              this.auditDisabled = false
+            }
+          } else {
+            this.disabled = true
+            this.auditDisabled = true
+          }
+        }
       }).catch((err) => {
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
     fetchPartListData () {
+      this.partLoading = true
       FetchPartInfo('get', {
         currentPage: this.pageInfo.currentPage || 1,
         pageSize: this.pageInfo.pageSize,
         isDelete: 2,
         cargoId: this.$route.params.cargoId
       }).then((res) => {
-        this.partTableData = res.partInfoDtos
-        this.pageInfo = {
-          ...this.pageInfo,
-          total: res.statistics.totalSize,
-          currentPage: res.statistics.currentPage
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.partTableData = respondData.partInfoDtos
+          this.pageInfo = {
+            ...this.pageInfo,
+            total: respondData.statistics.totalSize,
+            currentPage: respondData.statistics.currentPage
+          }
+          this.partLoading = false
         }
-        this.loading = false
       }).catch((err) => {
-        this.loading = false
-        // 显示提示
+        this.partLoading = false
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
+        })
+      })
+    },
+    /**
+     * 获取招标中心经办人角色下的用户
+     * */
+    fetchUserByRoleId () {
+      FetchUserByRoleId([5, 6]).then((res) => {
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.jingBanRen = respondData[5]
+          this.jingbankezhang = respondData[6]
+        }
+      }).catch((err) => {
+        this.$message({
+          message: err.message,
+          type: 'error'
         })
       })
     },
@@ -615,24 +688,20 @@ export default {
     },
     fetchBrandList (params) {
       FetchBrand(params).then(res => {
-        let treeData = util.composeTree(res)
-        this.treeData = treeData
+        if (res.message === 'success') {
+          let respondData = res.data
+          let treeData = util.composeTree(respondData)
+          this.treeData = treeData
+        }
       }).catch((err) => {
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
     renderContent (h, { node, data, store }) {
-      return (
-        <span>
-          <i class={data.icon}></i>
-          <span class="tree-text">{data.itemName}</span>
-        </span>
-      )
+      return (<span><i class={data.icon}></i><span class="tree-text">{data.itemName}</span></span>)
     },
     dataFilter (val) {
       this.$refs.tree.filter(val)
@@ -648,9 +717,7 @@ export default {
       this.$refs.tree.setCheckedKeys([])
     },
     handleCheckChange (data, checked, indeterminate) {
-      // 获取当前选择的id在数组中的索引
       const indexs = this.selectOrg.orgsId.indexOf(data.brandItemId)
-      // 如果不存在数组中，并且数组中已经有一个id并且checked为true的时候，代表不能再次选择。
       if (indexs < 0 && this.selectOrg.orgsId.length === 1 && checked) {
         this.$message({
           message: '只能选择一个货物品目！',
@@ -660,8 +727,6 @@ export default {
         // 设置已选择的节点为false 很重要
         this.$refs.tree.setChecked(data, false)
       } else if (this.selectOrg.orgsId.length === 0 && checked) {
-        // 发现数组为空 并且是已选择
-        // 防止数组有值，首先清空，再push
         this.selectOrg.orgsId = []
         this.selectOrg.orgsId.push(data.brandItemId)
         this.form.itemCode = data.itemCode
@@ -679,18 +744,23 @@ export default {
       let formData = new FormData()
       formData.append('file', this.file)
       Upload(formData).then((res) => {
-        this.form.attachment.attachId = res.attachId
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.form.attachment.attachId = respondData.attachId
+        }
       }).catch((err) => {
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
     handleRemove (file, fileList) {
       this.file = ''
+    },
+    // 计算总价格
+    handleInput (value) {
+      this.formPart.total = this.formPart.quantity * this.formPart.price
     },
     tableRowClassName ({ row, rowIndex }) {
       row.row_index = rowIndex + (this.pageInfo.currentPage - 1) * this.pageInfo.pageSize + 1
@@ -705,6 +775,7 @@ export default {
         this.boxParams = { type: 'edit', data: this.multipleSelection[0] }
         this.formPart = this.multipleSelection[0]
         this.formPart.price = parseFloat(this.multipleSelection[0].price)
+        this.formPart.quantity = parseInt(this.multipleSelection[0].quantity)
         this.isVisible = true
       } else {
         this.$message({
@@ -721,26 +792,22 @@ export default {
           type: 'warning'
         }).then(() => {
           if (this.listParams.type === 1) { // 新增货物
-            (this.partTableData).splice((this.multipleSelection[0]).row_index, 1)
+            this.partTableData.splice((this.multipleSelection[0].row_index) - 1, 1)
             this.$message({
               message: '删除成功！',
-              type: 'success',
-              duration: 3 * 1000
+              type: 'success'
             })
           } else if (this.listParams.type === 2) { // 编辑货物
             FetchPartInfo('delete', (this.multipleSelection[0]).partId).then((res) => {
               this.$message({
                 message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
+                type: 'success'
               })
               this.fetchPartListData()
             }).catch((err) => {
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }
@@ -758,11 +825,26 @@ export default {
       }
     },
     handleAdd () {
-      this.isVisible = true
       this.boxParams = {
         type: 'add',
         data: {}
       }
+      this.formPart = {
+        partCode: '',
+        partName: '',
+        standards: '',
+        techParams: '',
+        manufactor: '',
+        unit: '',
+        quantity: '',
+        price: '',
+        remark: '',
+        total: ''
+      }
+      this.$nextTick(() => { // 默认选中厂家
+        this.resetForm('partForm')
+      })
+      this.isVisible = true
     },
     handleSavePartForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -776,68 +858,52 @@ export default {
             unit: this.formPart.unit,
             quantity: this.formPart.quantity,
             price: this.formPart.price,
-            remark: this.formPart.remark
+            remark: this.formPart.remark,
+            total: this.formPart.total
           }
-          console.log('====33', params)
           if (this.boxParams.type === 'add') {
             if (this.listParams.type === 1) { // 新增货物
               this.partTableData.unshift(params)
-              this.resetForm('partForm')
               this.isVisible = false
+              this.resetForm('partForm')
             } else if (this.listParams.type === 2) { // 编辑货物
-              console.log(999, this.$route.params.cargoId)
               params.cargoId = this.form.cargoId
               FetchPartInfo('post', params).then((res) => {
-                console.log(888, res)
                 this.fetchPartListData()
                 this.resetForm('partForm')
                 this.isVisible = false
               }).catch((err) => {
-                // 显示提示
                 this.$message({
                   message: err.message,
-                  type: 'error',
-                  duration: 5 * 1000
+                  type: 'error'
                 })
               })
             }
           } else if (this.boxParams.type === 'edit') {
             if (this.listParams.type === 1) {
               this.$set(this.partTableData,
-                this.multipleSelection[0].row_index,
+                this.boxParams.data.row_index,
                 {
-                  ...this.multipleSelection[0],
+                  ...this.boxParams.data,
                   ...params
                 }
               )
-              this.resetForm('partForm')
               this.isVisible = false
+              this.resetForm('partForm')
             } else if (this.listParams.type === 2) {
               params.id = this.boxParams.data.partId
-              console.log('============333', params)
               FetchPartInfo('put', params).then((res) => {
-                console.log('=======', res)
-                // this.$message({
-                //   message: '修改配件信息成功',
-                //   type: 'success',
-                //   duration: 3 * 1000
-                // })
                 this.fetchPartListData()
                 this.resetForm('partForm')
                 this.isVisible = false
               }).catch((err) => {
-                // 显示提示
                 this.$message({
                   message: err.message,
-                  type: 'error',
-                  duration: 5 * 1000
+                  type: 'error'
                 })
               })
             }
           }
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     },
@@ -845,12 +911,13 @@ export default {
      * 提交表单
      * @param formName
      */
-    handleSaveGoods (formName) {
+    handleSaveGoods (formName, type) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let partData = []
           this.partTableData.forEach(item => {
             partData.push({
+              partId: '',
               partName: item.partName,
               standards: item.standards,
               techParams: item.techParams,
@@ -858,7 +925,8 @@ export default {
               unit: item.unit,
               quantity: item.quantity,
               price: item.price,
-              remark: item.remark
+              remark: item.remark,
+              total: item.total
             })
           })
           let params = {
@@ -873,63 +941,168 @@ export default {
             currency: this.form.currency,
             guaranteeRate: this.form.guaranteeRate,
             remark: this.form.remark,
+            status: type,
             attachment: {
               attachId: this.form.attachment.attachId
             },
+            partnerId: (this.info.roles[0].id === 1 && !Object.keys(this.partnerInfo).length) ? this.info.partnerInfo.partnerId : this.partnerInfo.partnerId,
             partInfos: partData
           }
-          console.log('====33', params)
           if (this.listParams.type === 1) {
-            FetchCargoInfo('post', params).then((res) => {
-              console.log(888, res)
-              this.$message({
-                message: '新建货物信息成功！',
-                type: 'success',
-                duration: 3 * 1000
-              })
-              this.resetForm('form')
-              this.$store.dispatch('d2admin/menu/headerActivePathSet', '/goods')
-              this.$router.push({ path: '/goods/list' })
-              let tagName = this.current
-              this.close({ tagName })
-            }).catch((err) => {
-              // 显示提示
-              this.$message({
-                message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+            return new Promise((resolve, reject) => {
+              FetchCargoInfo('post', params).then(async (res) => {
+                if (res.message === 'success') {
+                  let respondData = res.data
+                  let flowData = {
+                    businessType: 'cargoAudit',
+                    businessSubject: respondData.cargoName,
+                    businessId: respondData.cargoId,
+                    parentActor: this.info.username,
+                    flowNodeName: '供应商录入货物',
+                    action: type,
+                    opinion: type === 1 ? '供应商拟稿' : '请审核',
+                    nextActor: type === 1 ? this.info.username : this.jingBanRen
+                  }
+                  let auditData
+                  if (type === 1) {
+                    auditData = await fetchAuditData(flowData, type)
+                  } else if (type === 2) { // 提交审核（添加两条审核数据，拟稿/提交审核）
+                    await fetchAuditData(flowData, type)
+                    auditData = await fetchStartModifyAuditData(flowData, type)
+                  }
+                  if (auditData) {
+                    this.$message({
+                      message: type === 2 ? '保存并提交货物成功！' : '保存货物信息成功！',
+                      type: 'success'
+                    })
+                    this.resetForm('form')
+                    this.handleClose()
+                  }
+                  resolve()
+                }
+              }).catch((err) => {
+                this.$message({
+                  message: err.message,
+                  type: 'error'
+                })
+                reject(err)
               })
             })
           } else if (this.listParams.type === 2) {
-            params.id = this.boxParams.data.cargoId
-            FetchCargoInfo('put', params).then((res) => {
+            params.id = this.$route.params.cargoId
+            this.modifyData(params, type)
+          } else if (this.listParams.type === 3) {
+            this.$prompt('请输入审批意见:', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消'
+            }).then(({ value }) => {
+              params.id = this.$route.params.cargoId
+              this.modifyData(params, type, value)
+            }).catch(() => {
               this.$message({
-                message: '修改货物信息成功！',
-                type: 'success',
-                duration: 3 * 1000
-              })
-              this.resetForm('form')
-              // this.$emit('hideDialog')
-              // this.$emit('fetchList')
-            }).catch((err) => {
-              // 显示提示
-              this.$message({
-                message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'info',
+                message: '取消审核'
               })
             })
           }
-        } else {
-          console.log('error submit!!')
-          return false
         }
+      })
+    },
+    /**
+     * type 1草稿 2审核中 3同意 4退回 (5完成)
+     * */
+    modifyData (params, type, opinion) {
+      if (this.info.roles[0].id === 6 && type === 3) {
+        params.status = 5
+      }
+      FetchCargoInfo('put', params).then(async (res) => {
+        if (res.message === 'success') {
+          let respondData = res.data
+          let nextActor = ''
+          let flowNodeName = ''
+          switch (this.info.roles[0].id) {
+            case 1:
+              if (type === 2) {
+                nextActor = this.jingBanRen
+                flowNodeName = '供应商录入货物'
+              }
+              break
+            case 5:
+              if (type === 3) {
+                nextActor = this.jingbankezhang
+              } else if (type === 4) {
+                nextActor = respondData.creator
+              }
+              flowNodeName = '招标中心经办人审核'
+              break
+            case 6:
+              if (type === 4) {
+                nextActor = this.jingBanRen
+              }
+              flowNodeName = '招标中心科长复核'
+              break
+          }
+          let flowData = {
+            businessType: 'cargoAudit',
+            businessSubject: respondData.cargoName,
+            businessId: respondData.cargoId,
+            flowNodeName: flowNodeName,
+            parentActor: this.info.username,
+            action: type,
+            opinion: type === 1 ? '拟稿' : opinion || '请审核',
+            nextActor: nextActor
+          }
+          if (type === 1) {
+            this.$message({
+              message: '保存货物信息成功！',
+              type: 'success'
+            })
+            this.resetForm('form')
+            this.handleClose()
+          } else if (type === 2) {
+            let auditData
+            if (this.auditData && Number(this.auditData.action) === 4) { // 退回审核的情况 修改新增
+              auditData = await modifyAndAddAuditData(flowData, type)
+            } else { // 修改
+              auditData = await fetchStartModifyAuditData(flowData, type)
+            }
+            if (auditData) {
+              this.$message({
+                message: '提交货物信息成功！',
+                type: 'success'
+              })
+              this.resetForm('form')
+              this.handleClose()
+            }
+          } else if (type === 3 || type === 4) {
+            let auditData = await modifyAndAddAuditData(flowData, type)
+            if (auditData) {
+              this.$message({
+                message: type === 3 ? '同意该货物信息录入！' : '退回该货物信息录入!',
+                type: 'success'
+              })
+              this.resetForm('form')
+              this.handleClose()
+            }
+          }
+        }
+      }).catch((err) => {
+        this.$message({
+          message: err.message,
+          type: 'error'
+        })
       })
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
     },
+    handleCloseD () {
+      this.resetForm('partForm')
+      this.isVisible = false
+    },
     handleClose () {
+      this.$store.dispatch('d2admin/menu/headerActivePathSet', '/goods')
+      this.$router.push({ path: '/goods/list' })
       let tagName = this.current
       this.close({ tagName })
     },
@@ -946,26 +1119,44 @@ export default {
      * 导入配件数据
      */
     handleUpload (file) {
+      this.partLoading = true
       this.partFile = this.$refs.importFile.files[0]
-      let formData = new FormData()
-      formData.append('file', this.partFile)
-      PartInfoUpload(formData).then((res) => {
-        console.log('===========222', res)
-      }).catch((err) => {
-        // 显示提示
-        this.$message({
-          message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+      if (this.listParams.type === 1) {
+        let keyObj = {
+          '主要技术参数': 'techParams',
+          '产地/厂家': 'manufactor',
+          '单价': 'price',
+          '型号/规格': 'standards',
+          '备注': 'remark',
+          '数量': 'quantity',
+          '设备或配件名称': 'partName',
+          '单位': 'unit',
+          '总价': 'total'
+        }
+        util.readXLSXData(this.partFile, keyObj).then(data => {
+          this.partTableData.splice(0, 0, ...data)
+          this.partLoading = false
         })
-      })
+      } else if (this.listParams.type === 2) {
+        let formData = new FormData()
+        formData.append('file', this.partFile)
+        let cargoId = this.$route.params.cargoId
+        PartInfoUpload(formData, cargoId).then((res) => {
+          this.fetchPartListData()
+        }).catch((err) => {
+          this.$message({
+            message: err.message,
+            type: 'error'
+          })
+        })
+      }
     }
 
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
   .form-footer-con{
     border-top: 1px solid #EBEEF5;
@@ -1010,12 +1201,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  .btn-width-90{
-    width:90px;
-    height:30px;
-    padding: 0 !important;
-    font-size: 12px !important;
   }
   .search-wrapper{
     display: flex;

@@ -5,7 +5,7 @@
     <!-- 主体内容 -->
     <div class="d2-layout-header-aside-content" flex="dir:top">
       <!-- 顶栏 -->
-      <div class="d2-theme-header" :style="{ opacity: this.searchActive ? 0.5 : 1 }" flex-box="0" flex>
+      <div class="d2-theme-header" flex-box="0" flex>
         <router-link to="/index" class="logo-group" :style="{width: asideCollapse ? asideWidthCollapse : asideWidth}" flex-box="0">
           <!--<img v-if="asideCollapse" :src="`${$baseUrl}image/theme/${themeActiveSetting.name}/logo/icon-only.png`">-->
           <!--<img v-else :src="`${$baseUrl}image/theme/${themeActiveSetting.name}/logo/all.png`">-->
@@ -22,7 +22,7 @@
         <div class="d2-header-right" flex-box="0">
           <!-- 如果你只想在开发环境显示这个按钮请添加 v-if="$env === 'development'" -->
           <!--<d2-header-search @click="handleSearchClick"/>-->
-          <d2-header-log/>
+          <d2-header-log v-if="$env === 'development'" />
           <!--<d2-header-theme/>-->
           <d2-header-user/>
         </div>
@@ -30,14 +30,14 @@
       <!-- 下面 主体 -->
       <div class="d2-theme-container" flex-box="1" flex>
         <!-- 主体 侧边栏 -->
-        <div flex-box="0" ref="aside" class="d2-theme-container-aside" :style="{ width: asideCollapse ? asideWidthCollapse : asideWidth, opacity: this.searchActive ? 0.5 : 1 }">
+        <div flex-box="0" ref="aside" class="d2-theme-container-aside" :style="{ width: asideCollapse ? asideWidthCollapse : asideWidth }">
           <d2-menu-side />
         </div>
         <!-- 主体 -->
         <div class="d2-theme-container-main" flex-box="1" flex>
           <!-- 内容 -->
           <transition name="fade-scale">
-            <div v-if="!searchActive" class="d2-theme-container-main-layer" flex="dir:top">
+            <div class="d2-theme-container-main-layer" flex="dir:top">
               <!-- tab -->
               <div class="d2-theme-container-main-header" flex-box="0">
                 <d2-tabs/>
@@ -65,12 +65,8 @@ import d2Tabs from './components/tabs'
 import d2HeaderUser from './components/header-user'
 import d2HeaderLog from './components/header-log'
 import { mapState, mapGetters, mapActions } from 'vuex'
-import mixinSearch from './mixins/search'
 export default {
   name: 'd2-layout-header-aside',
-  mixins: [
-    mixinSearch
-  ],
   components: {
     d2LayoutHeaderMenu,
     d2MenuSide,
@@ -88,7 +84,6 @@ export default {
     }
   },
   created () {
-    console.log('====父组件')
   },
   computed: {
     ...mapState('d2admin', {

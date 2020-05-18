@@ -12,13 +12,12 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
                         <label>货物名称:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
                           v-model="searchData.cargoName"
@@ -28,7 +27,7 @@
                       <li class="search-item">
                         <label>配件名称:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
                           v-model="searchData.subject"
@@ -37,8 +36,8 @@
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn"  @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn"  @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -52,20 +51,31 @@
               <i class="list-icon"></i>
               <span class="list-title">列表</span>
             </div>
-            <div class="table-tool-btn">
-              <el-button class="tool-basic-btn" size="mini" @click="handleAdd">新建</el-button>
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看/编辑</el-button>
-              <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
-              <el-button class="tool-download-btn" size="mini" @click="handleDownloadTemplate">下载导入模板</el-button>
-              <el-button class="tool-import-btn" size="mini" >导入</el-button>
-              <el-button class="tool-export-btn" size="mini" @click="handleDownload">导出</el-button>
+            <div class="table-tool-btn" v-if="currentRouterData">
+              <div class="btn-con" v-for="(item, index) in currentRouterData.menuBtn" >
+                <el-button v-if="item.menuCode =='supplierCheck' " size="mini" class="tool-edit-btn" @click="handleEdit">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='supplierDelete'" size="mini" class="tool-delete-btn" @click="handleDelete">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='supplierExport'"  size="mini" class="tool-export-btn" >{{item.menuName}}</el-button>
+
+                <el-button v-if="item.menuCode =='goodsCreate' " class="tool-basic-btn" size="mini" @click="handleAdd">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='goodsCheck'" size="mini" class="tool-edit-btn" @click="handleView">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='goodsCheckOrEdit'" size="mini" class="tool-edit-btn" @click="handleEdit">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='goodsDelete'" size="mini" class="tool-delete-btn" @click="handleDelete">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='goodsDownload'" class="tool-download-btn" size="mini" @click="handleDownloadTemplate">{{item.menuName}}</el-button>
+                <div class="upload-div" v-else-if="item.menuCode =='goodsImport'">
+                  <input type="file" accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="upload-input"  ref="importFile" @change="handleUpload">
+                  <el-button class="tool-import-btn upload-btn" size="mini">{{item.menuName}}</el-button>
+                </div>
+                <el-button v-else-if="item.menuCode =='goodsExport'" class="tool-export-btn" size="mini" @click="handleDownload">{{item.menuName}}</el-button>
+
+              </div>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
               :data="cargoInfoDtos"
@@ -88,37 +98,37 @@
                 prop="cargoSerial"
                 align="center"
                 label="货物序号"
-                width="210">
+                width="250">
               </el-table-column>
               <el-table-column
                 prop="itemName"
                 align="center"
                 label="货物品目"
-                width="210">
+                width="280">
               </el-table-column>
               <el-table-column
                 prop="cargoName"
                 align="center"
-                width="210"
+                width="280"
                 label="货物名称">
               </el-table-column>
               <el-table-column
                 prop="cargoCode"
                 align="center"
                 label="货物编号"
-                width="210">
+                width="250">
               </el-table-column>
               <el-table-column
                 prop="brand"
                 align="center"
                 label="品牌"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="model"
                 align="center"
                 label="型号"
-                width="150">
+                width="180">
               </el-table-column>
               <el-table-column
                 label="主要参数"
@@ -137,31 +147,31 @@
                 prop="manufactor"
                 align="center"
                 label="产地"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="type"
                 align="center"
                 label="进口/国产类别"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="currency"
                 align="center"
                 label="币种"
-                width="210">
+                width="250">
               </el-table-column>
               <el-table-column
                 prop="guaranteeRate"
                 align="center"
                 label="维保率/月"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="attachment.attachName"
                 label="证明文件"
                 align="center"
-                width="210">
+                width="320">
                 <template slot-scope="scope">
                   <el-link v-if="scope.row.attachment" style="font-size: 12px;" type="primary" @click="handleDownloadPhoto(scope.row.attachment)">{{scope.row.attachment.attachName }}</el-link>
                 </template>
@@ -169,24 +179,12 @@
               <el-table-column
                 prop="remark"
                 align="center"
-                label="型号"
-                width="150">
+                label="备注">
               </el-table-column>
-              <!--<el-table-column label="操作"  width="150" fixed="right">-->
-                <!--<template slot-scope="scope">-->
-                  <!--<el-button-->
-                    <!--size="mini"-->
-                    <!--class="table-basic-btn"-->
-                    <!--@click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-                  <!--<el-button-->
-                    <!--size="mini"-->
-                    <!--type="danger"-->
-                    <!--@click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
-                <!--</template>-->
-              <!--</el-table-column>-->
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -201,26 +199,17 @@
         </div>
       </div>
     </div>
-    <modify-box :dialogVisible="dialogVisible" :boxParams="boxParams" @hideDialog="hideDialog" @fetchList="fetchList"/>
   </d2-container>
 </template>
 
 <script>
-  import modifyBox from './main-modify-box'
-  import {
-    Download
-  } from '@/api/sys.global'
-  import {
-    FetchCargoInfo,
-    FetchDownloadTemplate
-  } from '@/api/sys.goods'
+  import {Download} from '@/api/sys.global'
+  import {FetchCargoInfo, FetchDownloadTemplate, FetchUpLoadCargoInfo} from '@/api/sys.goods'
   import util from '@/libs/util'
-  import { mapActions } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'goods-list',
-    components: {
-      modifyBox
-    },
+    components: {},
     data () {
       return {
         filename: __filename,
@@ -243,12 +232,30 @@
       }
     },
     created () {
-      this.fetchList()
     },
     mounted () {
       this.$nextTick(() => { // 关闭当前右侧的 tab 页
         this.closeRight({pageSelect: '/goods/list'})
       })
+    },
+    computed: {
+      ...mapState('d2admin/user', [
+        'info'
+      ]),
+      ...mapState('d2admin/menu', [
+        'currentRouterData'
+      ])
+    },
+    watch: {
+      info: {
+        immediate: true, // 这句重要
+        handler (val) {
+          if (Object.keys(val).length) {
+            this.fetchList()
+          }
+        }
+      }
+
     },
     methods: {
       ...mapActions('d2admin/page', [
@@ -282,24 +289,24 @@
         FetchCargoInfo('get',Object.assign({
           currentPage: this.pageInfo.currentPage || 1,
           pageSize: this.pageInfo.pageSize,
-          isDelete:2
+          isDelete:2,
+          actor: this.info.username
         }, searchParams)).then((res) => {
-
-          this.cargoInfoDtos = res.cargoInfoDtos;
-          this.pageInfo = {
-            ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.statistics.currentPage
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.cargoInfoDtos = respondData.cargoInfoDtos;
+            this.pageInfo = {
+              ...this.pageInfo,
+              total: respondData.statistics.totalSize,
+              currentPage: respondData.statistics.currentPage
+            }
+            this.loading = false
           }
-          this.loading = false
-
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
           })
         })
       },
@@ -320,14 +327,19 @@
           return  util.formatTime(row.createDate)
         }
       },
-      handleEdit (index, row) {
-        console.log('==========3333',this.multipleSelection[0])
+      handleView (){
         if(this.multipleSelection.length === 1){
-          // this.boxParams ={ type: 'edit',data: this.multipleSelection[0]}
-          // this.dialogVisible = true
-          if(this.multipleSelection[0].status === 1 || this.multipleSelection[0].status === 3){
-            this.$router.push({ name: 'goods-edit' , params: { cargoId: this.multipleSelection[0].cargoId }})
-          }
+          this.$router.push({ name: 'goods-view' , params: { cargoId: this.multipleSelection[0].cargoId }})
+        }else{
+          this.$message({
+            type: 'info',
+            message: '请选择一条需要查看的数据！'
+          })
+        }
+      },
+      handleEdit (index, row) {
+        if(this.multipleSelection.length === 1){
+          this.$router.push({ name: 'goods-edit' , params: { cargoId: this.multipleSelection[0].cargoId }})
         }else{
           this.$message({
             type: 'info',
@@ -336,27 +348,29 @@
         }
       },
       handleDelete (index, row) {
-        if(this.multipleSelection.length === 1){
+        let cargoIds =[]
+        this.multipleSelection.forEach(item =>{
+          if(item.status === 1){
+            cargoIds.push(item.cargoId)
+          }
+        })
+        if(cargoIds.length){
           this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            FetchCargoInfo('delete', this.multipleSelection[0].cargoId).then((res) => {
+            FetchCargoInfo('delete', cargoIds).then((res) => {
               this.$message({
                 message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
+                type: 'success'
               })
               this.fetchList()
 
             }).catch((err) => {
-              this.loading = false
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }).catch(() => {
@@ -368,16 +382,10 @@
         }else{
           this.$message({
             type: 'info',
-            message: '请选择一条需要删除的数据！'
-          });
+            message: '请选择一条需要删除的草稿数据！'
+          })
         }
 
-      },
-      /**
-       * 下载图片
-       * */
-      handleDownloadPhoto (fileData) {
-        util.download('/download/' + fileData.attachId)
       },
       /**
        * 改变分页size
@@ -400,8 +408,6 @@
         this.fetchList()
       },
       handleAdd () {
-        // this.boxParams ={ type: 'add',data:{}}
-        // this.dialogVisible = true
         this.$router.push({ path: '/goods/add' })
       },
       /**
@@ -410,11 +416,39 @@
       handleDownloadTemplate () {
         util.download('/cargoInfo/downloadTemplate')
       },
+      /**
+       * 导出列表
+       * */
       handleDownload () {
-        util.download('/cargoInfo/export')
+        let cargoIds =[]
+        this.multipleSelection.forEach(item =>{
+          cargoIds.push(item.cargoId)
+        })
+        util.download('/cargoInfo/export',cargoIds.length ? cargoIds :'','POST')
       },
-      hideDialog () {
-        this.dialogVisible = false
+      /**
+       * 下载图片
+       * */
+      handleDownloadPhoto (fileData) {
+        util.download('/download/' + fileData.attachId)
+      },
+      /**
+       * 导入配件数据
+       */
+      handleUpload (file) {
+        this.partLoading = true
+        this.partFile = this.$refs.importFile.files[0]
+          let formData = new FormData()
+          formData.append('file', this.partFile)
+          FetchUpLoadCargoInfo(formData).then((res) => {
+            this.pageInfo.currentPage = 1
+            this.fetchList()
+          }).catch((err) => {
+            this.$message({
+              message: err.message,
+              type: 'error'
+            })
+          })
       }
     },
   }

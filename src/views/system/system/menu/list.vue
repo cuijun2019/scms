@@ -132,6 +132,7 @@
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"

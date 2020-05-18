@@ -29,7 +29,9 @@ export default {
     // 侧边栏收缩
     asideCollapse: setting.menu.asideCollapse,
     // 侧边栏的选中
-    asideNavNum: ''
+    asideNavNum: '',
+    // 当前路由的数据
+    currentRouterData: ''
   },
   getters: {
     /**
@@ -213,6 +215,16 @@ export default {
     asideNavNumSet (state, asideNavNum) {
       // store 赋值
       state.asideNavNum = asideNavNum
+    },
+    /**
+     * @description 设置当前路由的数据
+     * @param {Object} state state
+     * @param {Array} currentRouterData setting
+     */
+    currentRouterDataSet (state, currentRouterData) {
+      // store 赋值
+      state.currentRouterData = currentRouterData
     }
+
   }
 }

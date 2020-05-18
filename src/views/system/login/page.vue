@@ -1,72 +1,68 @@
 <template>
   <div class="page-login" @keyup="KeyUpEnter">
-    <div >
-      <div class="login-logo">
-        <p class="login-title">欢迎登录供应商管理系统！</p>
-      </div>
-      <!-- 表单 -->
-      <div class="loginBox">
-        <div class="loginBoxLeft">
-          <img src="@/assets/images/logoBoxLeft.jpg" alt=""></div>
-        <div class="loginBoxRight">
-          <el-form ref="loginForm" label-position="top" :rules="rules" :model="formLogin"
-                   size="default" class="logoForm" @submit="submit">
-            <el-form-item prop="username">
-              <el-input type="text" v-model="formLogin.username" placeholder="用户名" class="loginInput">
-                <img className='inputIcon' slot="prefix" src='@/assets/images/user_icon.png' alt=""/>
-              </el-input>
-            </el-form-item>
-            <el-form-item prop="password">
-              <el-input type="password" v-model="formLogin.password" placeholder="密码" class="loginInput">
-                <img className='inputIcon' slot="prefix" src='@/assets/images/pwd_icon.png' alt=""/>
-              </el-input>
-            </el-form-item>
-            <el-form-item prop="code" class="verCode-wrap">
-              <el-input type="text" v-model="formLogin.code" placeholder="验证码">
-                <template slot="prepend">验证码</template>
-                <template slot="append">
-                  <!--@click="getVerifyCode"-->
-                  <img class="login-code"  :src="`${verCode.src}`"
-                       style="width: 130px;">
-                </template>
-              </el-input>
-            </el-form-item>
-
-            <el-form-item class="remember-div">
-              <el-checkbox v-model="remember">记住密码</el-checkbox>
-            </el-form-item>
-
-            <el-form-item>
-              <el-button size="default" @click="submit" type="primary"
-                         class="button-login">登录
-              </el-button>
-            </el-form-item>
-
-            <el-form-item>
-              <div
-                class="page-login--options"
-                flex="main:justify cross:center">
-                <span @click="handleRegister">注册用户</span>
-                <span><d2-icon name="question-circle"/> 忘记密码</span>
+      <div class="login-con login-bg-img">
+        <div class="login-box">
+          <div class="login-content">
+            <div class="login-wrapper">
+              <div class="login-logo-con">
+                <img src="@/assets/images/logo.png" alt="">
               </div>
-            </el-form-item>
+              <p class="login-title">欢迎登录协议供货管理系统</p>
+              <div>
+                <el-form ref="loginForm" label-position="top" :rules="rules" :model="formLogin"
+                         size="default" class="logo-form" @submit="submit">
+                  <el-form-item prop="username">
+                    <el-input type="text" v-model="formLogin.username" placeholder="请输入账号" class="login-input">
+                      <img className='input-icon' slot="prefix" src='@/assets/images/YH.png' alt=""/>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="password">
+                    <el-input type="password" v-model="formLogin.password" placeholder="请输入密码" class="login-input">
+                      <img className='input-icon' slot="prefix" src='@/assets/images/MM.png' alt=""/>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item prop="code" class="verCode-wrap">
+                    <el-input type="text" v-model="formLogin.code" placeholder="请输入验证码" class="login-input">
+                      <img className='input-icon' slot="prefix" src='@/assets/images/YZM.png' alt=""/>
+                      <template slot="append">
+                        <!--@click="getVerifyCode"-->
+                        <img class="login-code"  :src="`${verCode.src}`"
+                             style="width: 130px;" @click="getVerifyCode">
+                      </template>
+                    </el-input>
+                  </el-form-item>
 
-          </el-form>
+                  <el-form-item class="remember-div">
+                    <el-checkbox v-model="remember">记住密码</el-checkbox>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-button  @click="submit" class="button-login">登录</el-button>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <div
+                      class="page-login--options"
+                      flex="main:justify cross:center">
+                      <div>
+                        没有账户， <span class="register" @click="handleRegister">立即注册</span>
+                      </div>
+                      <span class="forget" @click="handleForgot"> 忘记密码</span>
+                    </div>
+                  </el-form-item>
+
+                </el-form>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-    </div>
   </div>
 </template>
 
 <script>
-import dayjs from 'dayjs'
 import { mapActions } from 'vuex'
-import localeMixin from '@/locales/mixin.js'
 export default {
-  mixins: [
-    localeMixin
-  ],
   data () {
     return {
       remember: true,
@@ -77,7 +73,7 @@ export default {
         {
           name: '管理员',
           username: 'admin',
-          password: '123456'
+          password: 'admin'
         },
         {
           name: '编辑',
@@ -91,7 +87,7 @@ export default {
         }
       ],
       verCode: {
-        src: 'http://39.98.129.213:8081/getCode',
+        src: '/api/getCode',
         imgDataURL: '',
         vcode: '',
         captchaId: ''
@@ -118,19 +114,19 @@ export default {
     }
   },
   mounted () {
-    this.timeInterval = setInterval(() => {
-      this.refreshTime()
-    }, 1000)
+
   },
   beforeDestroy () {
-    clearInterval(this.timeInterval)
   },
   methods: {
     ...mapActions('d2admin/account', [
       'login'
     ]),
-    refreshTime () {
-      this.time = dayjs().format('HH:mm:ss')
+    /**
+     * 获取二维码
+     * */
+    getVerifyCode () {
+      this.verCode.src = this.verCode.src + '?date = ' + new Date()
     },
     /**
      * @description 接收选择一个用户快速登录的事件
@@ -164,7 +160,8 @@ export default {
           // 具体需要传递的数据请自行修改代码
           this.login({
             username: this.formLogin.username,
-            password: this.formLogin.password
+            password: this.formLogin.password,
+            code: this.formLogin.code
           })
             .then(() => {
               // 重定向对象不存在则返回顶层路径
@@ -178,6 +175,9 @@ export default {
     },
     handleRegister () {
       this.$router.push('/register')
+    },
+    handleForgot () {
+      this.$router.push('/forgot')
     }
 
   }
@@ -188,133 +188,146 @@ export default {
   $inputBgColor: #f5fafd;
   $inputBorderColor: #b6c5cc;
   .page-login {
+    width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: center;
+    /*justify-content: center;*/
     align-items: flex-start;
     box-sizing: border-box;
-    padding-top: 18vh;
-    height: 100%;
-    background: #fff url('~@/assets/images/login_bg.jpg') no-repeat center center;
-    background-size: cover;
-    .login-title{
-      color: #ffffff;
-      font-size: 26px;
-      line-height: 0;
-      padding-left: 235px;
-    }
-
-    /*.page-login--content-main {*/
-      .login-logo {
-        height: 25px;
-        text-align: center;
-        cursor: pointer;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-        //padding-left: 20px;
-        span {
-          vertical-align: text-bottom;
-          font-size: 16px;
-          text-transform: uppercase;
-          display: inline-block;
-        }
-        .logoLeft {
-          width: 220px;
-        }
-        .logoRight {
-          width: 180px;
-        }
-      /*}*/
-    }
-
-    .loginBox {
-      display: flex;
-      box-shadow: 0px 1px 40px -2px #496786;
-      .loginBoxLeft {
-        width: 235px;
-        img {
-          display: block;
-          width: 100%;
-        }
-      }
-      .loginBoxRight {
-        background: #fff;
-        width: 420px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-    .userLoginTitle {
-      font-size: 18px;
-      margin-bottom: 20px;
-      color: #666;
-      //font-weight: bold;
-    }
-    .loginInput {
-      .el-input__inner {
-        background-color: $inputBgColor;
-        border: 1px solid $inputBorderColor;
-        box-shadow: 0px 0px 10px 0px #dceffd inset;
-        padding-left: 40px;
-      }
-    }
-    .inputIcon {
-      width: 16px;
-      display: block;
-      margin-right: 5px;
-    }
-    .el-input__prefix {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logoForm {
+    /*padding-top: 18vh;*/
+    .login-bg-img{
       width: 100%;
-      padding: 40px 40px 0;
+      height: 100%;
+      background: #fff url('~@/assets/images/login_bg.png') no-repeat center center;
+      background-size: cover;
     }
-    .button-login {
-      width: 100%;
-    }
+    .login-con{
+      position: relative;
+      .login-box{
+        position: absolute;
+        top: 0;
+        left: 55%;
+        right: 0;
+        bottom: 0;
+        background-color: #ffffff;
+        .login-content{
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          flex-flow: column;
+          box-sizing: border-box;
+          padding-top: 15vh;
+          .login-wrapper{
+            width: 75%;
+            .login-logo-con{
+              width: 250px;
+             margin-bottom: 30px;
+                img{
+                  display: inline-block;
+                  max-width: 100%;
+                }
+            }
+            .login-title{
+              color: #000000;
+              font-size: 26px;
+              line-height: 0;
+              margin-bottom: 56px;
+            }
+            .login-input {
+              .el-input__inner {
+                padding-left: 40px;
+                border-top: none;
+                border-right: none;
+                border-bottom: 1px solid #E5E5E5;
+                border-left: none;
+                border-radius: 0px;
+              }
+              .el-input-group__append, .el-input-group__prepend{
+                background: transparent;
+                border-top: none;
+                border-right: none;
+                border-bottom: 1px solid #E5E5E5;
+                border-left: none;
+              }
+            }
+            .input-icon {
+              width: 16px;
+              display: block;
+              margin-right: 5px;
+            }
+            .el-input__prefix {
+              display: flex;
+              align-items: center;
+              justify-content: flex-start;
+              width: 40px;
+              &:after{
+                position: absolute;
+                content: '|';
+                right: 10px;
+              }
+            }
 
-    .el-input-group__append, .el-input-group__prepend {
-      background-color: $inputBgColor;
-      border: 1px solid $inputBorderColor;
-    }
-    .el-form-item__error {
-      position: static;
-    }
-    .verCode-wrap {
-      .el-input-group__append {
-        padding: 0;
-        height: 100%;
-        .login-code {
-          padding: 0;
-          width: 126px;
-          height: 38px;
-          display: block;
-          border-radius: 4px;
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
+            .logo-form {
+              width: 100%;
+              /*padding: 40px 40px 0;*/
+            }
+            .button-login {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 100%;
+              height:40px;
+              color: #ffffff;
+              background:rgba(59,157,248,1);
+              box-shadow:0px 5px 15px 0px rgba(72,157,252,0.7);
+            }
+            .el-form-item__error {
+              position: static;
+            }
+            .verCode-wrap {
+              .el-input-group__append {
+                padding: 0;
+                height: 100%;
+                .login-code {
+                  padding: 0;
+                  width: 120px;
+                  /*height: 38px;*/
+                  display: block;
+                  /*border-radius: 4px;*/
+                  border-top-left-radius: 0;
+                  border-bottom-left-radius: 0;
+                }
+              }
+            }
+            .remember-div{
+              text-align: right;
+              margin: -20px 0 0 0 !important;
+              .el-checkbox__label{
+                font-weight: normal;
+              }
+            }
+
+          }
         }
       }
-    }
-    .remember-div{
-      text-align: right;
-      margin: -20px 0 0 0 !important;
     }
     // 登陆选项
     .page-login--options {
       margin: 0px;
       padding: 0px;
       font-size: 14px;
-      color: $color-primary;
-      margin-bottom: 15px;
-      font-weight: bold;
+      /*margin-bottom: 15px;*/
+      color: #A8ACB9;
       span{
         cursor: pointer;
+      }
+      .register{
+        color: #489DFC;
+      }
+      .forget{
+        display: inline-block;
+        line-height: 23px;
+        border-bottom:1px solid #E5E5E5;
       }
     }
 

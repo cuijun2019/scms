@@ -20,7 +20,8 @@ export function FetchAgentInfo (method, data, edit = false) {
         requestObj.data = data
         break
       case 'delete':
-        requestObj.url = '/agentInfo/' + data
+        requestObj.method = 'put'
+        requestObj.data = data
         break
     }
   }
@@ -28,17 +29,40 @@ export function FetchAgentInfo (method, data, edit = false) {
 }
 
 /**
- * 导出代理商
- * @param method
+ *  代理商名称列表
  * @param data
  * @constructor
  */
-export function AgentInfoExport (method, data) {
+export function FetchAgentsList (data) {
   return request({
-    url: '/agentInfo/export',
-    method: method,
-    params: data,
-    responseType: 'blob'
-   // responseType: 'arraybuffer' // 二进制流
+    url: '/agentInfo/getAgentsList',
+    method: 'get',
+    params: data
+  })
+}
+
+/**
+ * 修改代理商状态
+ * @param data
+ * @constructor
+ */
+export function FetchUpdateAgent (data) {
+  return request({
+    url: '/agentInfo/updateAgent',
+    method: 'post',
+    data: data
+  })
+}
+
+/**
+ * 删除代理商接口
+ * @param data
+ * @constructor
+ */
+export function FetchDeleteAgents (data) {
+  return request({
+    url: '/agentInfo/deleteAgents',
+    method: 'post',
+    data: data
   })
 }

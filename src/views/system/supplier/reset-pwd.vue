@@ -1,27 +1,29 @@
 <!--suppress ALL -->
 <template>
   <d2-container class="page">
-    <div class="container">
+    <div class="container color-white">
       <div class="form-content">
         <div class="custom-header">
           <i class="line-icon"></i>
           <span class="header-title">修改密码</span>
         </div>
         <div class="form-wrapper">
-          <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="180px" class="demo-ruleForm" size="small">
-            <el-form-item label="原密码：" prop="name" class="supplier-item">
-              <el-input v-model="ruleForm.name"  class="supplier-input"  placeholder="原来的密码"></el-input>
-              <span>位数不少于6位！</span>
+          <el-form :model="form" :rules="rules" ref="form" label-width="180px"  size="medium">
+            <el-form-item label="原密码：" prop="oldPassword" class="supplier-item">
+              <el-input v-model="form.oldPassword" auto-complete="new-password" type="password"  class="supplier-input"  placeholder="原来的密码"></el-input>
+              <span> 密码由 8-16位字母、数字、特殊符号组成！</span>
             </el-form-item>
-            <el-form-item label="新密码：" prop="name" class="supplier-item">
-              <el-input v-model="ruleForm.name" type="password" class="supplier-input" placeholder="新密码"></el-input>
+            <el-form-item label="新密码：" prop="newPassword" class="supplier-item">
+              <el-input v-model="form.newPassword" auto-complete="new-password" type="password" class="supplier-input" placeholder="新密码"></el-input>
+              <span> 密码由 8-16位字母、数字、特殊符号组成！</span>
             </el-form-item>
-            <el-form-item label="确认密码：" prop="name" class="supplier-item">
-              <el-input v-model="ruleForm.name" type="password" class="supplier-input" placeholder="确认密码"></el-input>
+            <el-form-item label="确认密码：" prop="checkPass" class="supplier-item">
+              <el-input v-model="form.checkPass" auto-complete="new-password" type="password" class="supplier-input" placeholder="确认密码"></el-input>
             </el-form-item>
             <el-form-item class="form-btn">
-              <el-button type="primary" @click="submitForm('ruleForm')" size="small">保存并提交</el-button>
-              <el-button @click="resetForm('ruleForm')" size="small" class="reset-btn">重置</el-button>
+              <el-button class="form-submit-btn btn-width-120" @click="submitForm('form')" >保存</el-button>
+              <el-button class="form-reset-btn btn-width-120"  @click="resetForm ('form')">重置</el-button>
+              <el-button class="form-close-btn btn-width-120" @click="handleClose">关闭</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -29,90 +31,99 @@
     </div>
   </d2-container>
 </template>
-
 <script>
-  import modifyBox from './modify-box'
-  import {
-    FetchResultTemplate
-  } from '@/api/sys.template.purchase'//api
+  import {FetchUpdatePassword} from '@/api/sys.supplier'//api
   import util from '@/libs/util'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'supplier-reset-pwd',
-    components: {
-      modifyBox
-    },
+    components: {},
     data () {
+      var validatePass = (rule, value, callback) => {
+        if (!value) {
+          return callback(new Error('密码不能为空！'))
+        }
+        setTimeout(() => {
+          if (!util.isPwdExp(value)) {
+            callback(new Error('密码格式不正确!'))
+          } else {
+            if (this.form.checkPass !== '') {
+              this.$refs.form.validateField('checkPass');
+            }
+            callback();
+          }
+        }, 800)
+      };
+      var validatePass2 = (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.form.newPassword) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      };
       return {
         filename: __filename,
-        activeNames: ['1'],
-        ruleForm: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
+        form: {
+          oldPassword: '',
+          newPassword: '',
+          checkPass: ''
         },
         rules: {
-          name: [
-            { required: true, message: '请输入', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          oldPassword: [
+            { required: true, message: '请填写原密码', trigger: 'blur' },
+            { min: 6, message: '不少于6个字符', trigger: 'blur' }
           ],
-          region: [
-            { required: true, message: '请选择活动区域', trigger: 'change' }
+          newPassword: [
+            { required: true, message: '请填写新密码', trigger: 'blur' },
+            { validator: validatePass, trigger: 'blur' }
           ],
-          date1: [
-            { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          checkPass: [
+            { required: true, message: '请确认密码', trigger: 'blur' },
+            { validator: validatePass2, trigger: 'blur' }
           ],
-          date2: [
-            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
-          ],
-          type: [
-            { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
-          ],
-          resource: [
-            { required: true, message: '请选择活动资源', trigger: 'change' }
-          ],
-          desc: [
-            { required: true, message: '请填写活动形式', trigger: 'blur' }
-          ]
-        },
-        fileList: [
-          {
-            name: '厂家授权函.jpg',
-            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-          },
-          {
-            name: '厂家授权函.jpg',
-            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-          }, {
-            name: '厂家授权函.jpg',
-            url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-          }]
+        }
       }
     },
     created () {
-      this.fetchList()
+    },
+    computed: {
+      ...mapState('d2admin/page', [
+        'opened',
+        'current' // 用户获取当前页面的地址，用于关闭
+      ])
     },
     methods: {
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      },
+      ...mapActions('d2admin/page', [
+        'close'
+      ]),
+      ...mapActions('d2admin/account', [
+        'logout'
+      ]),
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            let params = {
+              oldPassword: this.form.oldPassword,
+              newPassword: this.form.newPassword
+            }
+            FetchUpdatePassword(params).then((res) => {
+              console.log(888, res)
+              this.$message({
+                message: '重置密码成功,将会重新登录！',
+                type: 'success'
+              })
+              this.logout({
+                confirm: true
+              })
+              // this.handleClose()
+            }).catch((err) => {
+              this.$message({
+                message: err.message,
+                type: 'error'
+              })
+            })
           } else {
             console.log('error submit!!');
             return false;
@@ -121,8 +132,12 @@
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+      handleClose () {
+        let tagName = this.current
+        this.close({ tagName })
       }
-    },
+    }
   }
 </script>
 
@@ -137,13 +152,9 @@
       }
     }
   }
-  .container{
-    background: #fff;
-    height: 100%;
-  }
   .form-wrapper{
     padding: 15px;
-    margin-top: 150px;
+    margin-top: 65px;
     margin-left: 180px;
     .el-upload__tip{
       display: inline-block;

@@ -147,6 +147,8 @@ let chartObj = {
     }
   ]
 }
+
+
 export default {
   name: 'flow-main',
   data () {

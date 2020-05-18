@@ -9,7 +9,7 @@ export default {
   path: '/flow',
   name: 'flow-main',
   meta,
-  redirect: { path: '/flow/main' },
+  redirect: { path: '/flow' },
   component: layoutHeaderAside,
   children: (pre => [
     { path: 'main', name: `${pre}mian`, component: _import('system/flow/index'), meta: { ...meta, title: '流程设计' } }

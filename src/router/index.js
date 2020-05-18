@@ -11,6 +11,10 @@ import util from '@/libs/util.js'
 // 路由数据
 import routes from './routes'
 
+import {
+  FetchPermissionBtn
+} from '@/api/sys.system'// api
+
 // fix vue-router NavigationDuplicated
 const VueRouterPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
@@ -33,6 +37,20 @@ const router = new VueRouter({
  * 权限验证
  */
 router.beforeEach(async (to, from, next) => {
+  setTimeout(() => {
+    let menuData = store.state.d2admin.menu.menuData
+    if (menuData) {
+      let childrenData = []
+      menuData.forEach(item => {
+        item.children.forEach(child => {
+          childrenData.push(child)
+        })
+      })
+      const currentRouterData = childrenData.filter(menu => menu.path === to.path)
+      store.commit('d2admin/menu/currentRouterDataSet', currentRouterData[0])
+    }
+  }, 10)
+
   // 确认已经加载多标签页数据 https://github.com/d2-projects/d2-admin/issues/201
   await store.dispatch('d2admin/page/isLoaded')
   // 确认已经加载组件尺寸设置 https://github.com/d2-projects/d2-admin/issues/198

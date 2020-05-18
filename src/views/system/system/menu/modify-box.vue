@@ -51,7 +51,7 @@
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="resetForm ('form')" size="mini">重置</el-button>
+        <el-button @click="resetForm ('form')" size="medium">重置</el-button>
         <el-button type="primary" @click="submitForm('form')" size="mini">保存</el-button>
         <el-button type="info" @click="closeBox" size="mini">关闭</el-button>
       </div>

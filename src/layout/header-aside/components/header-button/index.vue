@@ -45,7 +45,11 @@ export default {
   methods: {
     handleChangeMenu (item, idx) {
       this.$store.dispatch('d2admin/menu/headerActivePathSet', item.path)
-      this.$router.push({ path: item.path })
+      if (item.path === '/index') {
+        this.$router.push({ path: item.path })
+      } else {
+        this.$router.push({ path: item.children[0].path })
+      }
     }
   }
 }

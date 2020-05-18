@@ -4,24 +4,24 @@
       <ul class="top-con">
         <li>
           <span>认证状态：</span>
-          <span class="review-btn">已通过</span>
+          <span class="review-btn">{{form.authStatus == 1 ? '已认证' :'未认证'}}</span>
         </li>
         <li>
           <span>认证方式：</span>
-          <span>普通认证</span>
+          <span>{{form.authMethod}}</span>
         </li>
         <li>
           <span>认证时间：</span>
-          <span>2020-02-14</span>
+          <span>{{form.authDate ? form.authDate.substring(0,10):''}}</span>
         </li>
         <li>
           <span>企业名称：</span>
-          <span>xxx有限公司</span>
+          <span>{{form.companyNo}}</span>
         </li>
       </ul>
     </div>
     <div class="wrapper-margin-bottom-15">
-      <el-collapse v-model="goodsFormActive">
+      <el-collapse v-model="supplierFormActive">
         <el-collapse-item  name="1">
           <template slot="title">
             <div class="collapse-custom-header">
@@ -31,38 +31,38 @@
           </template>
           <div class="collapse-content">
               <div class="form-con">
-                <el-form :model="form" :rules="rules" ref="form" label-width="135px"  size="mini" class="project-basic-form">
+                <el-form :model="form" :rules="rules" ref="form" label-width="145px"  size="medium" class="project-basic-form">
                   <div class="">
-                    <el-form-item label="交易主体类型：" prop="cargoSerial">
-                      <p>{{form.cargoSerial}}</p>
+                    <el-form-item label="交易主体类型：" prop="supType">
+                      <p style="font-size: 16px">{{form.supType == 1 ? '供应商':'代理商'}}</p>
                     </el-form-item>
                     <div class="form-container">
-                    <div class="form-wrapper margin-right-65">
-                      <el-form-item label="单位名称：" prop="cargoName">
-                        <el-input v-model="form.cargoName" clearable required></el-input>
+                    <div class="form-wrapper margin-right-45">
+                      <el-form-item label="单位名称：" prop="companyNo">
+                        <el-input v-model="form.companyNo" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="行业分类：" prop="brand">
-                        <el-input v-model="form.brand" clearable required></el-input>
+                      <el-form-item label="行业分类：" prop="tradeCategory">
+                        <el-input v-model="form.tradeCategory" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="注册资金：" prop="cargoName">
-                        <el-input v-model.number="form.cargoName" clearable required></el-input>
+                      <el-form-item label="注册资金：" prop="fund">
+                        <el-input v-model.number="form.fund" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="注册资金单位：" prop="brand">
-                        <el-select v-model="form.brand" placeholder="请选择注册资金单位：" clearable required>
+                      <el-form-item label="注册资金单位：" prop="fundUnit">
+                        <el-select v-model="form.fundUnit" placeholder="请选择注册资金单位：" clearable required :disabled="isDisable">
                           <el-option label="元" value="元"></el-option>
                           <el-option label="万元" value="万元"></el-option>
                         </el-select>
                       </el-form-item>
-                      <el-form-item label="法人代表姓名：" prop="cargoName">
-                        <el-input v-model="form.cargoName" clearable required></el-input>
+                      <el-form-item label="法人代表姓名：" prop="incorporator">
+                        <el-input v-model="form.incorporator" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="详细地址：" prop="brand">
-                        <el-input v-model="form.brand" clearable required></el-input>
+                      <el-form-item label="详细地址：" prop="detailAddress">
+                        <el-input v-model="form.detailAddress" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
                     </div>
-                    <div class="form-wrapper margin-left-65">
-                      <el-form-item label="企业性质：" prop="cargoCode">
-                        <el-select v-model="form.cargoCode" placeholder="请选择企业性质" clearable required>
+                    <div class="form-wrapper margin-left-45">
+                      <el-form-item label="企业性质：" prop="busiNature">
+                        <el-select v-model="form.busiNature" placeholder="请选择企业性质" clearable required :disabled="isDisable">
                           <el-option
                             v-for="(item, index) in GLOBAL.hopeType"
                             :key="index"
@@ -70,13 +70,12 @@
                             :value="item.name">
                           </el-option>
                         </el-select>
-
                       </el-form-item>
-                      <el-form-item label="主营产品或业务：" prop="model">
-                        <el-input v-model="form.model" clearable required></el-input>
+                      <el-form-item label="主营产品或业务：" prop="business">
+                        <el-input v-model="form.business" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="注册资金币种：" prop="model">
-                        <el-select v-model="form.model" placeholder="请选择币种" clearable required>
+                      <el-form-item label="注册资金币种：" prop="fundCurrency">
+                        <el-select v-model="form.fundCurrency" placeholder="请选择币种" clearable required :disabled="isDisable">
                           <el-option
                             v-for="(item, index) in currencyData"
                             :key="index"
@@ -85,51 +84,52 @@
                           </el-option>
                         </el-select>
                       </el-form-item>
-                      <el-form-item label="企业人数：" prop="model">
-                        <el-input v-model="form.model" clearable required></el-input>
+                      <el-form-item label="企业人数：" prop="busiNumber">
+                        <el-input v-model.number="form.busiNumber" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="证件号码：" prop="model">
-                        <el-input v-model="form.model" clearable required></el-input>
+                      <el-form-item label="证件号码：" prop="identification">
+                        <el-input v-model="form.identification" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="机构注册地：" prop="model">
-                        <el-radio-group v-model="form.model" >
-                          <el-radio label="境内"></el-radio>
-                          <el-radio label="境外"></el-radio>
+                      <el-form-item label="机构注册地：" prop="domicile">
+                        <el-radio-group v-model="form.domicile" :disabled="isDisable">
+                          <el-radio :label="1">境内</el-radio>
+                          <el-radio :label="2">境外</el-radio>
                         </el-radio-group>
                       </el-form-item>
                     </div>
                   </div>
                   <div class="form-container">
-                    <div class="form-wrapper margin-right-65">
-                      <el-form-item label="邮政编码：" prop="manufactor">
-                        <el-input v-model="form.manufactor" clearable required></el-input>
+                    <div class="form-wrapper margin-right-45">
+                      <el-form-item label="邮政编码：" prop="zip">
+                        <el-input v-model="form.zip" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
-                      <el-form-item label="企业类别：" prop="currency">
-                        <el-radio-group v-model="form.model" >
-                          <el-radio label="监狱企业"></el-radio>
-                          <el-radio label="残疾人企业"></el-radio>
-                          <el-radio label="中小微企业"></el-radio>
+                      <el-form-item label="企业类别：" prop="busiType">
+                        <el-radio-group v-model="form.busiType" :disabled="isDisable">
+                          <el-radio :label="1">监狱企业</el-radio>
+                          <el-radio :label="2">残疾人企业</el-radio>
+                          <el-radio :label="3">中小微企业</el-radio>
                         </el-radio-group>
                       </el-form-item>
                     </div>
-                    <div class="form-wrapper margin-left-65">
-                      <el-form-item label="公司所在地" prop="mainParams">
+                    <div class="form-wrapper margin-left-45">
+                      <el-form-item label="公司所在地" prop="address">
                         <el-cascader
+                          :disabled="isDisable"
                           style="width: 100%"
                           placeholder="请选择公司所在省市区"
-                          v-model="form.mainParams"
+                          v-model="form.address"
                           :options="pcaData"
                           :props ="defaultProps"
-                          @change="handleChange"></el-cascader>
+                          ></el-cascader>
                       </el-form-item>
-                      <el-form-item label="公司网址：" prop="type">
-                        <el-input v-model="form.type" clearable required></el-input>
+                      <el-form-item label="公司网址：" prop="website">
+                        <el-input v-model="form.website" clearable required :disabled="isDisable"></el-input>
                       </el-form-item>
                     </div>
                   </div>
                   <div>
-                    <el-form-item label="公司简介：" prop="remark">
-                      <el-input type="textarea"   v-model="form.remark" clearable></el-input>
+                    <el-form-item label="公司简介：" prop="introduce">
+                      <el-input type="textarea"  v-model="form.introduce" clearable :disabled="isDisable"></el-input>
                     </el-form-item>
                   </div>
                   </div>
@@ -139,7 +139,7 @@
         </el-collapse-item>
       </el-collapse>
     </div>
-     <div>
+     <div class="wrapper-margin-bottom-15">
        <div class="table-container">
          <div class="table-tool">
            <div class="table-tool-title">
@@ -151,11 +151,11 @@
            <el-table
              :loading="loading"
              border
-             size="mini"
+             size="medium"
              :row-class-name="tableRowClassName"
              style="width: 100%"
              height="260"
-             :data="tableData"
+             :data="contactInfoList"
              @selection-change="handleSelectionChange">
              <el-table-column
                fixed
@@ -165,47 +165,57 @@
                width="50">
              </el-table-column>
              <el-table-column
-               fixed
-               type="selection"
-               align="center"
-               width="55">
-             </el-table-column>
-             <el-table-column
-               prop="userName"
+               prop="fullname"
                align="center">
                <template slot="header" slot-scope="scope">
                  <p class="mark">联系人姓名</p>
                </template>
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.userName" clearable required size="mini"></el-input>
+                 <el-form :model="scope.row" :rules="contactInfoRules" ref="fullnameForm">
+                   <el-form-item prop="fullname">
+                     <el-input v-model="scope.row.fullname" clearable required size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
              <el-table-column
-               prop="IDCode"
+               prop="identification"
                align="center">
                <template slot="header" slot-scope="scope">
                  <p class="mark">身份证号码</p>
                </template>
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.IDCode" clearable required size="mini"></el-input>
+                 <el-form :model="scope.row" :rules="contactInfoRules" ref="identificationForm">
+                   <el-form-item prop="identification">
+                     <el-input v-model="scope.row.identification" clearable required size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
              <el-table-column
-               prop="job"
+               prop="post"
                label="职务"
                align="center">
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.job" clearable  size="mini"></el-input>
+                 <el-form :model="scope.row">
+                   <el-form-item prop="post">
+                     <el-input v-model="scope.row.post" clearable  size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
              <el-table-column
-               prop="phone"
+               prop="telephone"
                align="center">
                <template slot="header" slot-scope="scope">
                  <p class="mark">联系电话</p>
                </template>
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.phone" clearable required size="mini"></el-input>
+                 <el-form :model="scope.row" :rules="contactInfoRules" ref="telephoneForm">
+                   <el-form-item prop="telephone">
+                     <el-input v-model="scope.row.telephone" clearable required size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
              <el-table-column
@@ -215,121 +225,187 @@
                  <p class="mark">电子邮箱</p>
                </template>
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.email" clearable required size="mini"></el-input>
+                 <el-form :model="scope.row" :rules="contactInfoRules" ref="emailForm">
+                   <el-form-item prop="email">
+                     <el-input v-model="scope.row.email" clearable required size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
              <el-table-column
-               prop="contact"
+               prop="fax"
                align="center">
                <template slot="header" slot-scope="scope">
                  <p class="mark">传真号</p>
                </template>
                <template slot-scope="scope">
-                 <el-input v-model="scope.row.contact" clearable required size="mini"></el-input>
+                 <el-form :model="scope.row" :rules="contactInfoRules" ref="faxForm">
+                   <el-form-item prop="fax">
+                     <el-input v-model="scope.row.fax" clearable required size="medium" :disabled="!scope.row.isSet"></el-input>
+                   </el-form-item>
+                 </el-form>
                </template>
              </el-table-column>
-             <el-table-column width="150" fixed="right"  align="center">
+             <el-table-column width="80" fixed="right"  align="center" v-if="!isDisable">
                <template slot="header" slot-scope="scope">
-                 <el-button class="tool-basic-btn" size="mini"  @click="handleAdd(scope.$index, scope.row)">新增</el-button>
+                 <el-button class="tool-basic-btn" size="medium"  @click="handleAdd">新增</el-button>
                </template>
                <template slot-scope="scope">
-                 <el-button size="mini" class="tool-edit-btn" @click="handleEdit">编辑</el-button>
-                 <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
+                 <!--<el-button size="mini" class="tool-edit-btn" @click="handleEdit(scope.$index, scope.row)">{{scope.row.isSet?'保存':"修改"}}</el-button>-->
+                 <el-button size="medium" class="tool-delete-btn" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                </template>
              </el-table-column>
            </el-table>
          </div>
-         <div class="form-tool">
-           <el-button class="form-submit-btn btn-width-90" v-if="listParams.type === 1">提交审核</el-button>
-           <el-button class="form-submit-btn btn-width-90" v-if="listParams.type === 1" @click="handleSaveGoods('form')">保存</el-button>
-           <el-button class="form-close-btn btn-width-90" @click="handleClose">关闭</el-button>
-         </div>
        </div>
      </div>
-    <el-dialog
-      title=""
-      :visible.sync="isVisible"
-      width="65%"
-      class="form-dialog"
-      :modal="false"
-      :show-close="false"
-    >
-      <div slot="title" class="dialog-header">
-        <div class="dialog-custom-header">
-          <i class="line-icon"></i>
-          <span class="header-title">配件信息</span>
+    <div class="main-con wrapper-margin-bottom-15 color-white">
+      <div class="custom-header">
+        <i class="line-icon"></i>
+        <span class="header-title">开户银行信息</span>
         </div>
-        <div>
-          <el-button class="dialog-basic-btn" @click="handleSavePartForm('partForm')">保存</el-button>
-          <el-button class="dialog-reset-btn" @click="resetForm('partForm')">重置</el-button>
-          <el-button class="dialog-close-btn" @click="isVisible = false">关闭</el-button>
-        </div>
-      </div>
-      <div class="form-con">
-        <el-form :model="formPart" :rules="rulesPart" ref="partForm" label-width="135px"  size="mini" class="basic-form">
-          <div class="form-container">
-            <div class="form-wrapper margin-right-65">
-              <el-form-item label="配件编号：" prop="partCode">
-                <el-input v-model="formPart.partCode" disabled></el-input>
-              </el-form-item>
-              <el-form-item label="型号/规格：" prop="standards">
-                <el-input v-model="formPart.standards"  clearable required></el-input>
-              </el-form-item>
-            </div>
-            <div class="form-wrapper margin-left-65">
-              <el-form-item label="设备或配件名称：" prop="partName">
-                <el-input v-model="formPart.partName" clearable required></el-input>
-              </el-form-item>
-              <el-form-item label="产地/厂家：" prop="manufactor">
-                <el-input v-model="formPart.manufactor"  clearable required></el-input>
-              </el-form-item>
-            </div>
-          </div>
-          <div>
-            <el-form-item label="主要技术参数" prop="techParams">
-              <el-input  type="textarea" v-model="formPart.techParams"  clearable required></el-input>
+         <div class="form-con margin-top-15">
+          <el-form :model="bankInfoForm" :rules="bankInfoRules" ref="bankInfoForm" label-width="190px"  size="medium" class="project-basic-form form-480">
+            <el-form-item label="开户银行：" prop="depositBank">
+              <el-input v-model="bankInfoForm.depositBank" clearable required :disabled="isDisable"></el-input>
             </el-form-item>
-          </div>
-          <div class="form-container">
-            <div class="form-wrapper margin-right-65">
-              <el-form-item label="单位：" prop="unit">
-                <el-input v-model="formPart.unit"  clearable required></el-input>
-              </el-form-item>
-              <el-form-item label="单价：" prop="price">
-                <el-input v-model="formPart.price"  clearable required></el-input>
-              </el-form-item>
-              <el-form-item label="备注：" prop="remark">
-                <el-input v-model="formPart.remark"  clearable ></el-input>
-              </el-form-item>
+            <el-form-item label="银行基本账号：" prop="bankAccount">
+              <el-input v-model="bankInfoForm.bankAccount" clearable required :disabled="isDisable"></el-input>
+            </el-form-item>
+            <el-form-item label="银行开户许可证附件：" prop="attachment.attachId">
+              <el-link v-if="isDisable" style="font-size: 12px;" type="primary" @click="handleDownloadPhoto(bankInfoForm.attachment)">{{bankInfoForm.attachment ? bankInfoForm.attachment.attachName :'' }}</el-link>
+              <div v-else>
+                <el-upload
+                  class="upload-container-inline"
+                  ref="upload1"
+                  action=""
+                  :on-change="(file, fileList) => {handleFileChange(file, fileList, 1)}"
+                  :on-remove="(file, fileList) => {handleRemove(file, fileList, 1)}"
+                  :file-list="bankInfoFormFileList"
+                  :limit="1"
+                  :auto-upload="false">
+                  <el-button size="mini"  type="primary" plain  style="width: 80px;">上传</el-button>
+                </el-upload>
+              </div>
+            </el-form-item>
+          </el-form>
+         </div>
+    </div>
+    <div class="main-con color-white">
+      <div class="custom-header">
+        <i class="line-icon"></i>
+        <span class="header-title">三证信息</span>
+      </div>
+      <div class="form-con margin-top-15">
+        <el-form :model="certificateInfoForm" :rules="certificateInfoRules" ref="certificateInfoForm" label-width="190px"  size="medium" class="project-basic-form">
+          <el-form-item label="是否三证合一：" prop="isCertificate">
+            <el-radio v-model="certificateInfoForm.isCertificate" :label="1" :disabled="isDisable">是</el-radio>
+            <el-radio v-model="certificateInfoForm.isCertificate" :label="2" :disabled="isDisable">否</el-radio>
+          </el-form-item>
+          <el-form-item label="社会信用代码：" prop="creditCode">
+            <el-input v-model="certificateInfoForm.creditCode" clearable required style="width: 300px" :disabled="true"></el-input>
+          </el-form-item>
+          <el-form-item label="营业执照副本附件：" prop="license.attachId">
+            <el-link v-if="isDisable" style="font-size: 12px;" type="primary" @click="handleDownloadPhoto(certificateInfoForm.license)">{{certificateInfoForm.license ? certificateInfoForm.license.attachName  :''}}</el-link>
+            <div v-else>
+              <el-upload
+                class="upload-container-inline"
+                ref="upload2"
+                action=""
+                :on-change="(file, fileList) => {handleFileChange(file, fileList, 2)}"
+                :on-remove="(file, fileList) => {handleRemove(file, fileList, 2)}"
+                :file-list="licenseFileList"
+                :limit="1"
+                :auto-upload="false">
+                <el-button size="mini"  type="primary" plain  style="width: 80px;">上传</el-button>
+                <div slot="tip" class="upload-tip">请上传营业执照副本原件或彩色扫描件</div>
+              </el-upload>
             </div>
-            <div class="form-wrapper margin-left-65">
-              <el-form-item label="数量：" prop="quantity">
-                <el-input v-model.number="formPart.quantity"  clearable required></el-input>
-              </el-form-item>
-              <el-form-item label="总价：" prop="name">
-                <el-input v-model="formPart.name"  clearable></el-input>
-              </el-form-item>
-            </div>
-          </div>
+
+          </el-form-item>
+          <el-form-item label="法人身份证附件：" prop="identityCardFront.attachId">
+           <div class="upload-pic-container">
+             <el-image
+               v-if="isDisable"
+               style="width: 176px; height: 106px"
+               :src="IDCardFontUrl">
+             </el-image>
+             <div class="upload-pic-con" v-else>
+               <el-upload
+                 class="upload-pic-wrapper"
+                 action=""
+                 list-type="picture-card"
+                 :file-list="identityCardFrontFileList"
+                 :on-change="(file, fileList) => {handleFileChange(file, fileList, 3)}"
+                 :on-remove="(file, fileList) => {handleRemove(file, fileList, 3)}"
+                 :limit="1"
+                 :auto-upload="false"
+                 accept="image/gif,image/jpeg,image/jpg,image/png,image/svg">
+                 <div class="image-slot image-sfz-z">上传正面</div>
+               </el-upload>
+             </div>
+             <el-image
+               class="upload-margin"
+               v-if="isDisable"
+               style="width: 176px; height: 106px"
+               :src="IDCardBackUrl">
+             </el-image>
+             <div class="upload-pic-con upload-margin" v-else>
+               <el-upload
+                 class="upload-pic-wrapper"
+                 action=""
+                 list-type="picture-card"
+                 :file-list="identityCardBackFileList"
+                 :on-change="(file, fileList) => {handleFileChange(file, fileList, 4)}"
+                 :on-remove="(file, fileList) => {handleRemove(file, fileList, 4)}"
+                 :limit="1"
+                 :auto-upload="false"
+                 accept="image/gif,image/jpeg,image/jpg,image/png,image/svg">
+                 <div class="image-slot image-sfz-f">上传反面</div>
+               </el-upload>
+             </div>
+             <div class="upload-pic-tips"    v-if="!isDisable">
+               <p>注：</p>
+               <div>
+                 <p>
+                   1.文件大小500k以内；
+                 </p>
+                 <p>
+                   2.分别上传法人身份正面和反面彩色照片或彩色扫描件;
+                 </p>
+                 <p>
+                   3.请您务必上传身份证原件照片，否则审核不通过。
+                 </p>
+               </div>
+             </div>
+           </div>
+          </el-form-item>
+          <el-form-item label="注册审核状态：" prop="authStatus">
+           <p class="status-text">{{form.authStatus == 1 ? '已认证' :'未认证'}}</p>
+          </el-form-item>
+          <el-form-item label="变更审核状态：" prop="isAuditing">
+           <p class="status-text">{{GLOBAL.statusTxt[form.isAuditing]}}</p>
+          </el-form-item>
         </el-form>
       </div>
-    </el-dialog>
+      <div class="form-tool">
+        <el-button class="form-submit-btn btn-width-120" v-if="!isDisable"  @click="handleSaveForm('form',2)">保存并提交</el-button>
+        <el-button class="form-submit-btn btn-width-120" v-if="!auditDisabled" @click="handleSaveForm('form',3)">同意</el-button>
+        <el-button class="form-submit-btn btn-width-120" v-if="!auditDisabled"  @click="handleSaveForm('form',4)">退回</el-button>
+        <el-button class="form-close-btn btn-width-120" @click="handleClose">关闭</el-button>
+      </div>
+    </div>
     </div>
 </template>
 
 <script>
-import {
-  Upload
-} from '@/api/sys.global'
-import {
-  FetchBrand,
-  FetchPartInfo,
-  FetchCargoInfo
-} from '@/api/sys.goods'
+import { Upload } from '@/api/sys.global'
+import { FetchSupplierInfo, FetchUpdatePartnerInfo } from '@/api/sys.supplier'// api
+import { getDataAuditStatus, fetchAuditData, fetchStartModifyAuditData, modifyAndAddAuditData } from '@/libs/flowAudit'
+import { FetchUserByRoleId } from '@/api/sys.system'
 import util from '@/libs/util'
 import pcaData from '@/libs/pca-code.json'
 import { mapState, mapActions } from 'vuex'
-console.log('==========3333', pcaData)
 export default {
   name: 'main-form',
   components: {
@@ -341,112 +417,220 @@ export default {
     }
   },
   data () {
+    let checkName = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('联系人姓名不能为空！'))
+      } else {
+        callback()
+      }
+    }
+    let checkIdCard = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('身份证号码不能为空！'))
+      }
+      setTimeout(() => {
+        if (!util.isIdCardExp(value)) {
+          callback(new Error('身份证号码格式不正确!'))
+        } else {
+          callback()
+        }
+      }, 800)
+    }
+    const telePhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('联系电话不能为空!'))
+      }
+      setTimeout(() => {
+        if (!util.isMobileTelExp(value)) {
+          callback(new Error('请填写正确的手机或电话号码!'))
+        } else {
+          callback()
+        }
+      }, 800)
+    }
+    const fax = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('传真号码不能为空!'))
+      }
+      setTimeout(() => {
+        if (!util.isFaxExp(value)) {
+          callback(new Error('请填写正确的传真号码!'))
+        } else {
+          callback()
+        }
+      }, 800)
+    }
     return {
       name: '',
       filename: '',
       loading: false,
-      goodsFormActive: ['1'],
+      supplierFormActive: ['1'],
       currencyData: util.currency(),
+      isDisable: false,
+      auditDisabled: true,
+      jingBanRen: '',
+      jingbankezhang: '',
+      auditData: {},
+      bankUrl: '',
+      bankInfoFormFile: {},
+      bankInfoFormFileList: [],
+      licenseFile: {},
+      licenseFileList: [],
+      identityCardFrontFile: {},
+      identityCardFrontFileList: [],
+      identityCardBackFile: {},
+      identityCardBackFileList: [],
+      licenseUrl: '',
+      IDCardFontUrl: '',
+      IDCardBackUrl: '',
       form: {
-        cargoId: '',
-        cargoSerial: '',
-        cargoCode: '',
-        itemCode: '',
-        itemName: '',
-        cargoName: '',
-        brand: '',
-        model: '',
-        mainParams: '',
-        manufactor: '',
-        type: '',
-        currency: '',
-        guaranteeRate: '',
-        remark: '',
+        partnerId: '',
+        supType: '',
+        companyNo: '',
+        busiNature: '',
+        tradeCategory: '',
+        business: '',
+        fund: '',
+        fundCurrency: '',
+        fundUnit: '',
+        busiNumber: '',
+        incorporator: '',
+        identification: '',
+        detailAddress: '',
+        domicile: '',
+        address: '',
+        zip: '',
+        website: '',
+        busiType: '',
+        introduce: '',
+        authStatus: '',
+        authMethod: '',
+        authDate: '',
+        isDelete: '',
+        isAuditing: ''
+      },
+      rules: {
+        companyNo: [
+          { required: true, message: '请填写单位名称', trigger: 'blur' }
+        ],
+        busiNature: [
+          { required: true, message: '请选择企业性质', trigger: 'change' }
+        ],
+        fund: [
+          { required: true, message: '请填写注册资金', trigger: 'blur' }
+        ],
+        fundCurrency: [
+          { required: true, message: '请选择资金币种', trigger: 'change' }
+        ],
+        fundUnit: [
+          { required: true, message: '请填写注册资金单位', trigger: 'blur' }
+        ],
+        busiNumber: [
+          { required: true, message: '请填写企业人数', trigger: 'blur' }
+        ],
+        incorporator: [
+          { required: true, message: '请填写法人代表姓名', trigger: 'blur' }
+        ],
+        identification: [
+          { required: true, message: '请填写证件号码', trigger: 'blur' }
+        ],
+        detailAddress: [
+          { required: true, message: '请填写详细地址', trigger: 'blur' }
+        ],
+        domicile: [
+          { required: true, message: '请选择机构注册地', trigger: 'change' }
+        ],
+        website: [
+          { required: true, message: '请填写公司网址', trigger: 'blur' }
+        ]
+      },
+      contactInfoList: [{
+        fullname: '姓名',
+        identification: '44098111111111',
+        post: '职务',
+        telephone: '1234567890',
+        email: '1111@qq.com',
+        fax: '1111',
+        isSet: false
+      }],
+      // table input框失焦校验
+      contactInfoRules: {
+        fullname: [
+          { required: true, message: '请填写联系人姓名', trigger: 'blur' },
+          { validator: checkName, trigger: ['blur', 'change'] }
+        ],
+        identification: [
+          { required: true, message: '请填写身份证号码', trigger: 'blur' },
+          { validator: checkIdCard, trigger: ['blur', 'change'] }
+        ],
+        telephone: [
+          { required: true, message: '请填写联系电话', trigger: 'blur' },
+          { validator: telePhone, trigger: ['blur', 'change'] }
+        ],
+        email: [
+          { required: true, message: '请填写电子邮箱', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+        ],
+        fax: [
+          { required: true, message: '请填写传真号', trigger: 'blur' },
+          { validator: fax, trigger: ['blur', 'change'] }
+        ]
+      },
+      bankInfoForm: {
+        bankId: '',
+        depositBank: '',
+        bankAccount: '',
         attachment: {
           attachId: ''
         },
-        creator: '',
-        createDate: '',
-        maintenanceMan: '',
-        maintenanceDate: ''
+        file: {}
       },
-      rules: {
-        itemName: [
-          { required: true, message: '请选择货物品目', trigger: 'change' }
+      bankInfoRules: {
+        depositBank: [
+          { required: true, message: '请填写开户银行', trigger: 'blur' }
         ],
-        cargoName: [
-          { required: true, message: '请填写货物名称', trigger: 'blur' }
+        bankAccount: [
+          { required: true, message: '请填写银行基本账号', trigger: 'blur' }
         ],
-        type: [
-          { required: true, message: '请选择进口/国产类别', trigger: 'change' }
-        ],
-        currency: [
-          { required: true, message: '请选择币种', trigger: 'change' }
-        ],
-        brand: [
-          { required: true, message: '请填写品牌', trigger: 'blur' }
-        ],
-        model: [
-          { required: true, message: '请填写型号', trigger: 'blur' }
-        ],
-        mainParams: [
-          { required: true, message: '请填写主要参数', trigger: 'blur' }
-        ],
-        manufactor: [
-          { required: true, message: '请填写产地', trigger: 'blur' }
-        ],
-        guaranteeRate: [
-          { required: true, message: '请填写维保率/月', trigger: 'blur' }
+        'attachment.attachId': [
+          { required: true, message: '银行开户许可证附件', trigger: 'change' }
         ]
       },
-      formPart: {
-        partCode: '',
-        partName: '',
-        standards: '',
-        techParams: '',
-        manufactor: '',
-        unit: '',
-        quantity: '',
-        price: '',
-        remark: '',
-        cargoInfo: {
-          cargoId: ''
+      certificateInfoForm: {
+        certificateId: '',
+        isCertificate: '',
+        creditCode: '',
+        licenseFile: {},
+        licenseFileList: [],
+        license: {
+          attachId: ''
+        },
+        identityCardFrontFile: {},
+        identityCardFront: {
+          attachId: ''
+        },
+        identityCardBackFile: {},
+        identityCardBack: {
+          attachId: ''
         }
       },
-      rulesPart: {
-        partName: [
-          { required: true, message: '请填写配件名称', trigger: 'blur' }
+      certificateInfoRules: {
+        isCertificate: [
+          { required: true, message: '请选择是否三证合一', trigger: 'blur' }
         ],
-        standards: [
-          { required: true, message: '请填写型号/规格', trigger: 'blur' }
+        creditCode: [
+          { required: true, message: '请填写社会信用代码', trigger: 'blur' }
         ],
-        manufactor: [
-          { required: true, message: '请填写产地', trigger: 'blur' }
+        'license.attachId': [
+          { required: true, message: '请上传营业执照副本附件', trigger: 'change' }
         ],
-        techParams: [
-          { required: true, message: '请填写主要技术参数', trigger: 'blur' }
+        'identityCardFront.attachId': [
+          { required: true, message: '请上传法人身份证附件正面', trigger: 'change' }
         ],
-        unit: [
-          { required: true, message: '请填写单位', trigger: 'blur' }
-        ],
-        quantity: [
-          { required: true, message: '请填写数量', trigger: 'blur' },
-          { type: 'number', message: '数量必须为数字值' }
-        ],
-        price: [
-          { required: true, message: '请填写单价', trigger: 'blur' }
+        'identityCardBack.attachId': [
+          { required: true, message: '请上传法人身份证附件反面', trigger: 'change' }
         ]
       },
-      fileList: [],
-      attachId: '',
-      tableData: [{
-        userName: '姓名',
-        IDCode: '44098111111111',
-        job: '职务',
-        phone: '1234567890',
-        email: '1111@qq.com',
-        contact: '1111'
-      }],
       isVisible: false,
       boxParams: {},
       searchName: '',
@@ -469,12 +653,9 @@ export default {
     }
   },
   created () {
-    console.log('==========4444444', this.$route.params.cargoId)
-    if (this.$route.params.cargoId) {
-      this.fetchDetailData(this.$route.params.cargoId)
-      this.fetchPartListData(this.$route.params.cargoId)
+    if (this.$route.params.partnerId) {
+      this.fetchDetailData(this.$route.params.partnerId)
     }
-    this.fetchBrandList()
   },
   filters: {},
   watch: {
@@ -482,23 +663,36 @@ export default {
       immediate: true, // 这句重要
       handler (val) {
         if (val) {
-          // switch (val.type) {
-          //   case 1:
-          //     this.$set(this.columns, 0, { title: '待办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '待办主题', key: 'name' })
-          //     break
-          //   case 2:
-          //     this.$set(this.columns, 0, { title: '已办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '已办主题', key: 'name' })
-          //     break
-          // }
+          if (val.type === 3) {
+            this.isDisable = true
+          } else if (val.type === 4) {
+            this.isDisable = true
+          } else if (val.type === 1) {
+            this.isDisable = true
+          }
         }
       }
-
+    },
+    info: {
+      immediate: true, // 这句重要
+      handler (val) {
+        if (Object.keys(val).length) {
+          if (this.listParams.type !== 4) {
+            this.fetchDetailData(val.partnerInfo.partnerId)
+          }
+          this.fetchUserByRoleId()
+          if (val.roles[0].id === 5 || val.roles[0].id === 6) {
+            this.auditDisabled = false
+          }
+        }
+      }
     }
 
   },
   computed: {
+    ...mapState('d2admin/user', [
+      'info'
+    ]),
     ...mapState('d2admin/page', [
       'opened',
       'current' // 用户获取当前页面的地址，用于关闭
@@ -508,62 +702,107 @@ export default {
     ...mapActions('d2admin/page', [
       'close'
     ]),
-    handleChange (value) {
-      console.log(999999999999999999, value)
-    },
     handleSelectionChange (val) {
       this.multipleSelection = val
     },
     fetchDetailData (id) {
-      FetchCargoInfo('get', id, true).then((res) => {
-        console.log('=====', res)
-        this.form = res
-        this.form.createDate = util.formatTime(res.createDate)
-        this.form.maintenanceDate = util.formatTime(res.maintenanceDate)
-        // this.form = {
-        //   agentName: res.agentName,
-        //   agentPoint: res.agentPoint,
-        //   status: res.status,
-        //   creator: res.creator,
-        //   createDate: util.formatTime(res.createDate)
-        // }
-        // this.attachId = res.attachment.attachId
-        // this.fileList = [{
-        //   name: res.attachment.attachName,
-        //   url: res.attachment.path
-        // }]
+      FetchSupplierInfo('get', id, true).then(async (res) => {
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.form = respondData
+          this.form.address = respondData.address ? respondData.address.split(',') : ''
+          respondData.contactInfoList.forEach(item => {
+            item.isSet = !this.isDisable
+          })
+          this.contactInfoList = respondData.contactInfoList
+          this.bankInfoForm = respondData.bankInfo
+          this.certificateInfoForm = respondData.certificateInfo
+          // this.IDCardFontUrl = (this.certificateInfoForm.identityCardFront.path).replace(/\/data\/nginx\/html/, 'http://47.105.181.143:83')
+          if (respondData.bankInfo) {
+            if (respondData.bankInfo.attachment) {
+              this.bankUrl = util.fileUrl(this.bankInfoForm.attachment.path)
+              this.bankInfoFormFileList = [{
+                name: respondData.bankInfo.attachment.attachName,
+                url: this.bankUrl
+              }]
+            }
+          }
+          if (respondData.certificateInfo) {
+            if (respondData.certificateInfo.license) {
+              this.licenseUrl = util.fileUrl(respondData.certificateInfo.license.path)
+              this.licenseFileList = [{
+                name: respondData.certificateInfo.license.attachName,
+                url: this.licenseUrl
+              }]
+            }
+            if (respondData.certificateInfo.identityCardFront) {
+              this.IDCardFontUrl = util.fileUrl(respondData.certificateInfo.identityCardFront.path)
+              this.identityCardFrontFileList = [{
+                name: respondData.certificateInfo.identityCardFront.attachName,
+                url: this.IDCardFontUrl
+              }]
+            }
+            if (respondData.certificateInfo.identityCardBack) {
+              this.IDCardBackUrl = util.fileUrl(respondData.certificateInfo.identityCardBack.path)
+              this.identityCardBackFileList = [{
+                name: respondData.certificateInfo.identityCardBack.attachName,
+                url: this.IDCardBackUrl
+              }]
+            }
+          }
+          let dataParams = {
+            businessType: 'registerAudit',
+            businessId: respondData.partnerId,
+            parentActor: this.info.username
+          }
+          let resData = await getDataAuditStatus(dataParams)
+          if (resData) {
+            this.auditData = resData
+            if (this.listParams.type === 1) {
+              this.isDisable = true
+              this.auditDisabled = true
+            } else {
+              if (this.info.roles[0].id === 1 || this.info.roles[0].id === 2) { // 供应商 代理商
+                this.isDisable = false
+              } else if (this.info.roles[0].id === 5) { // 招标中心经办人
+                this.isDisable = true
+                this.auditDisabled = false
+              } else if (this.info.roles[0].id === 6) { // 招标中心科长
+                this.isDisable = true
+                this.auditDisabled = false
+              }
+            }
+          } else {
+            if (this.listParams.type === 2 && (respondData.isAuditing === 1 || respondData.isAuditing === 5)) {
+              this.isDisable = false
+              this.auditDisabled = true
+            } else {
+              this.isDisable = true
+              this.auditDisabled = true
+            }
+          }
+        }
       }).catch((err) => {
-        this.loading = false
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
-    fetchPartListData () {
-      FetchPartInfo('get', {
-        currentPage: this.pageInfo.currentPage || 1,
-        pageSize: this.pageInfo.pageSize,
-        isDelete: 2,
-        cargoId: this.$route.params.cargoId
-      }).then((res) => {
-        console.log('===========33333', res)
-        this.cargoInfoDtos = res.cargoInfoDtos
-        this.pageInfo = {
-          ...this.pageInfo,
-          total: res.statistics.totalSize,
-          currentPage: res.currentPage
+    /**
+     * 获取招标中心经办人角色下的用户
+     * */
+    fetchUserByRoleId () {
+      FetchUserByRoleId([5, 6]).then((res) => {
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.jingBanRen = respondData[5]
+          this.jingbankezhang = respondData[6]
         }
-        this.loading = false
       }).catch((err) => {
-        this.loading = false
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
@@ -587,85 +826,73 @@ export default {
       }
       this.fetchPartListData()
     },
-    fetchBrandList (params) {
-      FetchBrand(params).then(res => {
-        let treeData = util.composeTree(res)
-        this.treeData = treeData
-      }).catch((err) => {
-        // 显示提示
-        this.$message({
-          message: err.message,
-          type: 'error',
-          duration: 5 * 1000
-        })
-      })
-    },
-    renderContent (h, { node, data, store }) {
-      return (
-        <span>
-          <i class={data.icon}></i>
-          <span class="tree-text">{data.itemName}</span>
-        </span>
-      )
-    },
-    dataFilter (val) {
-      this.$refs.tree.filter(val)
-    },
-    filterNode (value, data) {
-      if (!value) return true
-      return data.itemName.indexOf(value) !== -1
-    },
-    handleClear (val) {
-      console.log('======', val)
-      this.selectOrg.orgsId = []
-      this.form.itemCode = ''
-      this.form.itemName = ''
-      this.$refs.tree.setCheckedKeys([])
-    },
-    handleCheckChange (data, checked, indeterminate) {
-      // 获取当前选择的id在数组中的索引
-      const indexs = this.selectOrg.orgsId.indexOf(data.brandItemId)
-      // 如果不存在数组中，并且数组中已经有一个id并且checked为true的时候，代表不能再次选择。
-      if (indexs < 0 && this.selectOrg.orgsId.length === 1 && checked) {
-        this.$message({
-          message: '只能选择一个货物品目！',
-          type: 'error',
-          showClose: true
-        })
-        // 设置已选择的节点为false 很重要
-        this.$refs.tree.setChecked(data, false)
-      } else if (this.selectOrg.orgsId.length === 0 && checked) {
-        // 发现数组为空 并且是已选择
-        // 防止数组有值，首先清空，再push
-        this.selectOrg.orgsId = []
-        this.selectOrg.orgsId.push(data.brandItemId)
-        this.form.itemCode = data.itemCode
-        this.form.itemName = data.itemName
-        this.$refs.goodsTree.blur()
-      } else if (indexs >= 0 && this.selectOrg.orgsId.length === 1 && !checked) {
-        // 再次直接进行赋值为空操作
-        this.selectOrg.orgsId = []
-        this.form.itemCode = ''
-        this.form.itemName = ''
+    handleFileChange (file, fileList, type) {
+      console.log('====file', file)
+      switch (type) {
+        case 1:
+          this.bankInfoFormFile = file.raw
+          break
+        case 2 :
+          this.licenseFile = file.row
+          break
+        case 3 :
+          this.identityCardFrontFile = file.row
+          break
+        case 4 :
+          this.identityCardBackFile = file.row
+          break
       }
-    },
-    handleFileChange (file) {
-      this.file = file.raw
       let formData = new FormData()
-      formData.append('file', this.file)
+      formData.append('file', file.raw)
       Upload(formData).then((res) => {
-        this.form.attachment.attachId = res.attachId
+        if (res.message === 'success') {
+          let respondData = res.data
+          let resObj = {
+            attachId: respondData.attachId,
+            fileType: respondData.fileType,
+            uploader: respondData.uploader,
+            attachName: respondData.attachName,
+            attachSize: respondData.attachSize,
+            uploadTime: respondData.uploadTime,
+            path: respondData.path
+          }
+          switch (type) {
+            case 1:
+              this.bankInfoForm.attachment = resObj
+              break
+            case 2 :
+              this.certificateInfoForm.license = resObj
+              break
+            case 3 :
+              this.certificateInfoForm.identityCardFront = resObj
+              break
+            case 4 :
+              this.certificateInfoForm.identityCardBack = resObj
+              break
+          }
+        }
       }).catch((err) => {
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
-    handleRemove (file, fileList) {
-      this.file = ''
+    handleRemove (file, fileList, type) {
+      switch (type) {
+        case 1:
+          this.bankInfoFormFile = ''
+          break
+        case 2 :
+          this.licenseFile = ''
+          break
+        case 3 :
+          this.identityCardFrontFile = ''
+          break
+        case 4 :
+          this.identityCardBackFile = ''
+          break
+      }
     },
     tableRowClassName ({ row, rowIndex }) {
       row.row_index = rowIndex
@@ -676,261 +903,325 @@ export default {
       }
     },
     handleEdit (index, row) {
-      if (this.multipleSelection.length === 1) {
-        console.log('===============33333', this.multipleSelection[0])
-        this.boxParams = { type: 'edit', data: this.multipleSelection[0] }
-        console.log('=====', row)
-        this.formPart = this.multipleSelection[0]
-        this.isVisible = true
-      } else {
+      if (row.isSet) { // 保存
         this.$message({
-          type: 'info',
-          message: '请选择一条需要查看/编辑的数据！'
+          message: '保存成功！',
+          type: 'success'
         })
+        row.isSet = false
+      } else { // 修改
+        row.isSet = true
       }
     },
     handleDelete (index, row) {
-      if (this.multipleSelection.length === 1) {
-        this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          if (this.listParams.type === 1) { // 新增货物
-            (this.partTableData).splice((this.multipleSelection[0]).row_index, 1)
-            this.$message({
-              message: '删除成功！',
-              type: 'success',
-              duration: 3 * 1000
-            })
-          } else if (this.listParams.type === 2) { // 编辑货物
-            FetchCargoInfo('delete', (this.multipleSelection[0]).cargoId).then((res) => {
-              this.$message({
-                message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
-              })
-              (this.partTableData).splice((this.multipleSelection[0]).row_index, 1)
-            }).catch((err) => {
-              // 显示提示
-              this.$message({
-                message: err.message,
-                type: 'error',
-                duration: 5 * 1000
-              })
-            })
-          }
-        }).catch((err) => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.contactInfoList.splice(index, 1)
+        this.$message({
+          message: '删除成功！',
+          type: 'success'
         })
-      } else {
+      }).catch((err) => {
         this.$message({
           type: 'info',
-          message: '请选择一条需要删除的数据！'
-        })
-      }
-    },
-    handleAdd (index,row) {
-      console.log('==========3333',index, row)
-      this.isVisible = true
-      this.boxParams = {
-        type: 'add',
-        data: {}
-      }
-    },
-    fetchPartInfoList () {
-      FetchPartInfo('get', {}).then((res) => {
-        console.log(8889999, res)
-      }).catch((err) => {
-        // 显示提示
-        this.$message({
-          message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          message: '已取消删除'
         })
       })
     },
-    handleSavePartForm (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let params = {
-            partCode: this.formPart.partCode,
-            partName: this.formPart.partName,
-            standards: this.formPart.standards,
-            techParams: this.formPart.techParams,
-            manufactor: this.formPart.manufactor,
-            unit: this.formPart.unit,
-            quantity: this.formPart.quantity,
-            price: this.formPart.price,
-            remark: this.formPart.remark
-          }
-          console.log('====33', params)
-          if (this.boxParams.type === 'add') {
-            if (this.listParams.type === 1) { // 新增货物
-              this.partTableData.push(params)
-              this.resetForm('partForm')
-              this.isVisible = false
-            } else if (this.listParams.type === 2) { // 编辑货物
-              console.log(999, this.$route.params.cargoId)
-              params.cargoId = this.form.cargoId
-              FetchPartInfo('post', params).then((res) => {
-                console.log(888, res)
-                // this.$message({
-                //   message: '新建配件信息成功！',
-                //   type: 'success',
-                //   duration: 3 * 1000
-                // })
-                this.resetForm('partForm')
-                this.isVisible = false
-              }).catch((err) => {
-                // 显示提示
-                this.$message({
-                  message: err.message,
-                  type: 'error',
-                  duration: 5 * 1000
-                })
-              })
-            }
-          } else if (this.boxParams.type === 'edit') {
-            if (this.listParams.type === 1) {
-              this.$set(this.partTableData,
-                this.multipleSelection[0].row_index,
-                {
-                  ...this.multipleSelection[0],
-                  ...params
-                }
-              )
-              this.resetForm('partForm')
-              this.isVisible = false
-            } else if (this.listParams.type === 2) {
-              params.id = this.$route.params.cargoId
-              FetchPartInfo('put', params).then((res) => {
-                // this.$message({
-                //   message: '修改配件信息成功',
-                //   type: 'success',
-                //   duration: 3 * 1000
-                // })
-                this.resetForm('partForm')
-                this.isVisible = false
-              }).catch((err) => {
-                // 显示提示
-                this.$message({
-                  message: err.message,
-                  type: 'error',
-                  duration: 5 * 1000
-                })
-              })
-            }
-          }
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
+    handleAdd () {
+      let addObj = { fullname: '', identification: '', post: '', telephone: '', email: '', fax: '', isSet: true }
+      this.contactInfoList.push(addObj)
     },
     /**
      * 提交表单
-     * @param formName
+     *  type 1草稿 2审核中 3同意 4退回 (5完成)
+     * @param
      */
-    handleSaveGoods (formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          let partData = []
-          this.partTableData.forEach(item => {
-            partData.push({
-              partName: item.partName,
-              standards: item.standards,
-              techParams: item.techParams,
-              manufactor: item.manufactor,
-              unit: item.unit,
-              quantity: item.quantity,
-              price: item.price,
-              remark: item.remark
+    handleSaveForm (formName, type) {
+      // 验证三个 form
+      const form1 = new Promise((resolve, reject) => {
+        this.$refs['form'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
+      const form2 = new Promise((resolve, reject) => {
+        this.$refs['bankInfoForm'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
+
+      const form3 = new Promise((resolve, reject) => {
+        this.$refs['certificateInfoForm'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
+
+      const form4 = new Promise((resolve, reject) => {
+        this.$refs['fullnameForm'].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            this.$message({
+              message: '请填写联系人姓名！',
+              type: 'error'
             })
+          }
+        })
+      })
+      const form5 = new Promise((resolve, reject) => {
+        this.$refs['identificationForm'].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            this.$message({
+              message: '联系人身份证号码格式不正确或空！',
+              type: 'error'
+            })
+          }
+        })
+      })
+
+      const form6 = new Promise((resolve, reject) => {
+        this.$refs['telephoneForm'].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            this.$message({
+              message: '联系人联系电话格式不正确或空！',
+              type: 'error'
+            })
+          }
+        })
+      })
+      const form7 = new Promise((resolve, reject) => {
+        this.$refs['emailForm'].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            this.$message({
+              message: '联系人电子邮箱格式不正确或空！',
+              type: 'error'
+            })
+          }
+        })
+      })
+      const form8 = new Promise((resolve, reject) => {
+        this.$refs['faxForm'].validate(valid => {
+          if (valid) {
+            resolve()
+          } else {
+            this.$message({
+              message: '联系人传真格式不正确或空！',
+              type: 'error'
+            })
+          }
+        })
+      })
+
+      Promise.all([form1, form2, form3, form4, form5, form6, form7, form8]).then(() => {
+        if (!this.contactInfoList.length) {
+          this.$message({
+            message: '请填写联系人信息！',
+            type: 'error'
           })
-          let params = {
-            itemCode: this.form.itemCode,
-            itemName: this.form.itemName,
-            cargoName: this.form.cargoName,
-            brand: this.form.brand,
-            model: this.form.model,
-            mainParams: this.form.mainParams,
-            manufactor: this.form.manufactor,
-            type: this.form.type,
-            currency: this.form.currency,
-            guaranteeRate: this.form.guaranteeRate,
-            remark: this.form.remark,
-            attachment: {
-              attachId: this.form.attachment.attachId
-            },
-            partInfos: partData
-          }
-          console.log('====33', params)
-          if (this.listParams.type === 1) {
-            FetchCargoInfo('post', params).then((res) => {
-              console.log(888, res)
-              this.$message({
-                message: '新建货物信息成功！',
-                type: 'success',
-                duration: 3 * 1000
-              })
-              this.resetForm('form')
-              this.$store.dispatch('d2admin/menu/headerActivePathSet', '/goods')
-              this.$router.push({ path: '/goods/list' })
-              let tagName = this.current
-              this.close({ tagName })
-            }).catch((err) => {
-              // 显示提示
-              this.$message({
-                message: err.message,
-                type: 'error',
-                duration: 5 * 1000
-              })
-            })
-          } else if (this.listParams.type === 2) {
-            params.id = this.boxParams.data.cargoId
-            FetchCargoInfo('put', params).then((res) => {
-              this.$message({
-                message: '修改货物信息成功！',
-                type: 'success',
-                duration: 3 * 1000
-              })
-              this.resetForm('form')
-              // this.$emit('hideDialog')
-              // this.$emit('fetchList')
-            }).catch((err) => {
-              // 显示提示
-              this.$message({
-                message: err.message,
-                type: 'error',
-                duration: 5 * 1000
-              })
-            })
-          }
-        } else {
-          console.log('error submit!!')
           return false
         }
+        let bankInfo = {
+          partnerId: this.form.partnerId,
+          bankId: this.bankInfoForm.bankId,
+          depositBank: this.bankInfoForm.depositBank,
+          bankAccount: this.bankInfoForm.bankAccount,
+          attachment: {
+            attachId: this.bankInfoForm.attachment.attachId,
+            fileType: this.bankInfoForm.attachment.fileType,
+            uploader: this.bankInfoForm.attachment.uploader,
+            attachName: this.bankInfoForm.attachment.attachName,
+            attachSize: this.bankInfoForm.attachment.attachSize,
+            uploadTime: this.bankInfoForm.attachment.uploadTime,
+            path: this.bankInfoForm.attachment.path
+          }
+        }
+        let certificateInfo = {
+          partnerId: this.form.partnerId,
+          certificateId: this.certificateInfoForm.certificateId,
+          isCertificate: this.certificateInfoForm.isCertificate,
+          creditCode: this.certificateInfoForm.creditCode,
+          license: {
+            attachId: this.certificateInfoForm.license.attachId,
+            attachName: this.certificateInfoForm.license.attachName,
+            attachSize: this.certificateInfoForm.license.attachSize,
+            fileType: this.certificateInfoForm.license.fileType,
+            path: this.certificateInfoForm.license.path,
+            uploadTime: this.certificateInfoForm.license.uploadTime,
+            uploader: this.certificateInfoForm.license.uploader
+          },
+          identityCardFront: {
+            attachId: this.certificateInfoForm.identityCardFront.attachId,
+            attachName: this.certificateInfoForm.identityCardFront.attachName,
+            attachSize: this.certificateInfoForm.identityCardFront.attachSize,
+            fileType: this.certificateInfoForm.identityCardFront.fileType,
+            path: this.certificateInfoForm.identityCardFront.path,
+            uploadTime: this.certificateInfoForm.identityCardFront.uploadTime,
+            uploader: this.certificateInfoForm.identityCardFront.uploader
+          },
+          identityCardBack: {
+            attachId: this.certificateInfoForm.identityCardBack.attachId,
+            attachName: this.certificateInfoForm.identityCardBack.attachName,
+            attachSize: this.certificateInfoForm.identityCardBack.attachSize,
+            fileType: this.certificateInfoForm.identityCardBack.fileType,
+            path: this.certificateInfoForm.identityCardBack.path,
+            uploadTime: this.certificateInfoForm.identityCardBack.uploadTime,
+            uploader: this.certificateInfoForm.identityCardBack.uploader
+          }
+        }
+        let params = {
+          partnerId: this.form.partnerId,
+          supType: this.form.supType,
+          companyNo: this.form.companyNo,
+          busiNature: this.form.busiNature,
+          tradeCategory: this.form.tradeCategory,
+          business: this.form.business,
+          fund: this.form.fund,
+          fundCurrency: this.form.fundCurrency,
+          fundUnit: this.form.fundUnit,
+          busiNumber: this.form.busiNumber,
+          incorporator: this.form.incorporator,
+          identification: this.form.identification,
+          detailAddress: this.form.detailAddress,
+          domicile: this.form.domicile,
+          address: (this.form.address).join(','),
+          zip: this.form.zip,
+          website: this.form.website,
+          busiType: this.form.busiType,
+          introduce: this.form.introduce,
+          authStatus: this.form.authStatus,
+          authMethod: this.form.authMethod,
+          authDate: this.form.authDate,
+          isDelete: this.form.isDelete,
+          contactInfoList: this.contactInfoList,
+          bankInfo: bankInfo,
+          certificateInfo: certificateInfo,
+          isAuditing: type
+        }
+        if (this.info.roles[0].id === 6 && type === 3) {
+          params.isAuditing = 5
+        }
+        return new Promise((resolve, reject) => {
+          FetchUpdatePartnerInfo(params).then(async (res) => {
+            // if (res.message === 'success') {
+            //   let respondData = res.data
+            // console.log(888, res)
+            // this.$message({
+            //   message: '我的信息变更成功！',
+            //   type: 'success'
+            // })
+            // this.handleClose()
+            // }
+            // if (res.message === 'success') {
+            let respondData = res.data
+            let flowData = {
+              businessType: 'registerAudit',
+              businessSubject: respondData.certificateInfo.creditCode,
+              businessId: respondData.partnerId,
+              flowNodeName: '注册信息变更',
+              parentActor: this.info.username,
+              action: type,
+              opinion: '请审核',
+              nextActor: this.jingBanRen
+            }
+            if (type === 2) { // 提交审核（添加两条审核数据，拟稿/提交审核）
+              await fetchAuditData(flowData, type)
+              let auditData = await fetchStartModifyAuditData(flowData, type)
+              if (auditData) {
+                this.$message({
+                  message: '保存并提交我的信息成功！',
+                  type: 'success'
+                })
+                this.handleClose()
+                resolve()
+              }
+            } else if (type === 3 || type === 4) {
+              this.$prompt('请输入审批意见:', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+              }).then(async ({ opinion }) => {
+                let nextActor = ''
+                let flowNodeName = ''
+                switch (this.info.roles[0].id) {
+                  case 5:
+                    if (type === 3) {
+                      nextActor = this.jingbankezhang
+                    } else if (type === 4) {
+                      nextActor = respondData.certificateInfo.creditCode
+                    }
+                    flowNodeName = '招标中心经办人审核'
+                    break
+                  case 6:
+                    if (type === 4) {
+                      nextActor = this.jingBanRen
+                    }
+                    flowNodeName = '招标中心科长复核'
+                    break
+                }
+                let flowData = {
+                  businessType: 'registerAudit',
+                  businessSubject: respondData.certificateInfo.creditCode,
+                  businessId: respondData.partnerId,
+                  flowNodeName: flowNodeName,
+                  parentActor: this.info.username,
+                  action: type,
+                  opinion: opinion || '请审核',
+                  nextActor: nextActor
+                }
+                let auditData = await modifyAndAddAuditData(flowData, type)
+                if (auditData) {
+                  this.$message({
+                    message: type === 3 ? '同意该注册信息变更！！' : '退回该注册信息变更!',
+                    type: 'success'
+                  })
+                  this.handleClose()
+                }
+              }).catch(() => {
+                this.$message({
+                  type: 'info',
+                  message: '取消审核'
+                })
+              })
+            }
+
+            // }
+          }).catch((err) => {
+            this.$message({ message: err.message, type: 'error' })
+            reject(err)
+          })
+        })
       })
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
     },
     handleClose () {
+      if (this.listParams.type === 3) {
+        this.$store.dispatch('d2admin/menu/headerActivePathSet', '/supplier')
+        this.$router.push({ path: '/supplier/list' })
+      }
       let tagName = this.current
       this.close({ tagName })
     },
-    hideDialog () {
-      this.dialogVisible = false
+    /**
+     * 下载图片
+     * */
+    handleDownloadPhoto (fileData) {
+      util.download('/download/' + fileData.attachId)
     }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" >
   .top-con{
     display: flex;
     justify-content: flex-start;
@@ -938,6 +1229,7 @@ export default {
     padding: 0 15px;
     height: 46px;
     background-color: #ffffff;
+    font-size: 16px;
     li{
       margin-right: 45px;
     }
@@ -978,28 +1270,13 @@ export default {
       }
     }
   }
-  .table-tool-tips{
-    margin: 0 15px 25px;
-    p{
-      color: #333333;
-      line-height: 23px;
-    }
-    .text-color-red{
-      color: #FF0000;
-    }
-  }
   .form-tool{
     margin: 10px 15px 30px;
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  .btn-width-90{
-    width:90px;
-    height:30px;
-    padding: 0 !important;
-    font-size: 12px !important;
-  }
+
   .search-wrapper{
     display: flex;
     justify-content: flex-start;
@@ -1019,4 +1296,58 @@ export default {
     padding: 0px 12px;
     border-bottom: 1px solid #333;
   }
+  .main-con{
+    padding-bottom: 15px;
+  }
+  .upload-tip{
+    padding-left: 15px;
+   color: #FF0707;
+    font-size: 12px;
+  }
+  .upload-pic-container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center
+  }
+  .upload-pic-con{
+    width: 176px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .upload-pic-wrapper{
+    width: 100%;
+    height: 106px;
+    overflow: hidden;
+  }
+  .upload-pic-btn{
+    margin: 10px 0;
+  }
+  .upload-margin{
+    margin-left: 15px;
+  }
+  .upload-pic-tips{
+    display: flex;
+    justify-content: flex-start;
+    margin-top: -45px;
+    margin-left: 15px;
+    p{
+      color: #FF0707;
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
+  .status-text{
+    color: #03BC92;
+  }
+  .el-upload--picture-card{
+    width: 176px;
+    height: 106px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+   .el-upload-list--picture-card .el-upload-list__item{
+     width: 176px;
+     height: 106px;
+   }
 </style>

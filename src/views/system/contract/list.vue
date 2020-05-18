@@ -3,9 +3,6 @@
   <d2-container class="page">
     <div class="list-container">
       <div class="list-wrapper">
-        <!--<div class="list-header">-->
-        <!--<span class="list-header-title">已办列表</span>-->
-        <!--</div>-->
         <div class="list-search">
           <div class="search-container">
             <el-collapse v-model="activeNames">
@@ -15,33 +12,32 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
                         <label>项目主题:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
-                          v-model="searchData.subject"
+                          v-model="searchData.projectSubject"
                           clearable>
                         </el-input>
                       </li>
                       <li class="search-item">
                         <label>项目编号:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
-                          v-model="searchData.subject"
+                          v-model="searchData.projectCode"
                           clearable>
                         </el-input>
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn"  @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn"  @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -55,29 +51,29 @@
               <i class="list-icon"></i>
               <span class="list-title">列表</span>
             </div>
-            <div class="table-tool-btn">
-              <!--<el-button size="mini" class="tool-basic-btn" @click="handleAdd">新建</el-button>-->
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看</el-button>
-              <el-button class="tool-export-btn" size="mini" @click="handleDownload">导出</el-button>
-              <!--<el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>-->
-              <!--<el-button size="mini" class="tool-roles-btn" >角色配置</el-button>-->
+            <div class="table-tool-btn" v-if="currentRouterData">
+              <div class="btn-con" v-for="(item, index) in currentRouterData.menuBtn" >
+                <el-button v-if="item.menuCode =='contractCheck' " size="mini" class="tool-edit-btn" @click="handleView">{{item.menuName}}</el-button>
+                <el-button  v-else-if="item.menuCode =='contractExport'" class="tool-export-btn" size="mini" @click="handleExport">{{item.menuName}}</el-button>
+              </div>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
-              :data="resultTemplateDtos"
+              :data="contractNoticceDtos"
               @selection-change="handleSelectionChange">
               <el-table-column
                 fixed
                 label="序号"
                 type="index"
                 align="center"
-                width="50">
+                width="50"
+                :index="indexMethod">
               </el-table-column>
               <el-table-column
                 fixed
@@ -86,57 +82,61 @@
                 width="55">
               </el-table-column>
               <el-table-column
-                prop="resultTemplateSubject"
+                prop="projectSubject"
                 label="项目主题"
                 align="center"
-                width="210">
+                width="280">
               </el-table-column>
               <el-table-column
-                prop="status"
+                prop="projectCode"
                 label="项目编号"
                 align="center"
-                width="120">
+                width="280">
               </el-table-column>
               <el-table-column
-                prop="status"
+                prop="attachment.attachName"
                 label="合同"
-                align="center">
-              </el-table-column>
-              <el-table-column
-                prop="attachId"
-                label="中标代理商"
                 align="center"
-                width="210">
+                width="320">
+                <template slot-scope="scope">
+                  <el-link style="font-size: 12px;" :underline="false" type="primary" @click="handleDownloadPhoto(scope.row.attachment)">{{scope.row.attachment ? scope.row.attachment.attachName :''}}</el-link>
+                </template>
               </el-table-column>
               <el-table-column
-                prop="creator"
+                prop="supplier"
+                label="成交代理商"
+                align="center"
+                width="180">
+              </el-table-column>
+              <el-table-column
+                prop="purchaser"
                 label="采购人"
                 align="center"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
-                prop="maintenanceDate"
+                prop="signDate"
                 label="签收时间"
-                width="150"
+                width="180"
                 align="center"
                 :formatter="formatterTime">
               </el-table-column>
               <el-table-column
-                prop="createDate"
+                prop="creator"
                 label="创建人"
-                align="center"
-                width="150">
+                align="center">
               </el-table-column>
               <el-table-column
-                prop="maintenanceMan"
+                prop="createDate"
                 label="创建时间"
                 align="center"
-                width="120"
+                width="180"
                 :formatter="formatterTime">
               </el-table-column>
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -156,10 +156,10 @@
 
 <script>
   import {
-    FetchUser
-  } from '@/api/sys.system'
+    FetchContractNotice
+  } from '@/api/sys.contract'
   import util from '@/libs/util'
-  import { mapActions } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'contract-list',
     data () {
@@ -176,9 +176,9 @@
           }],
         searchData:{
           subject:'',
-          status:''
+          projectCode:''
         },
-        resultTemplateDtos: [],
+        contractNoticceDtos: [],
         loading: false,
         pageInfo: {
           pageSize: this.GLOBAL.pageSize,
@@ -194,18 +194,26 @@
       this.fetchList()
     },
     mounted () {
-      // this.$nextTick(() => { // 关闭当前右侧的 tab 页
-      //   this.closeRight({pageSelect: '/system/user'})
-      // })
+      this.$nextTick(() => { // 关闭当前右侧的 tab 页
+        this.closeRight({pageSelect: '/contract/list'})
+      })
+    },
+    computed: {
+      ...mapState('d2admin/menu', [
+        'currentRouterData'
+      ])
     },
     methods: {
       ...mapActions('d2admin/page', [
         'closeRight'
       ]),
+      indexMethod (index) {
+        return index + (this.pageInfo.currentPage - 1) * this.pageInfo.pageSize + 1
+      },
       handleClear () {
         this.searchData ={
-            subject:'',
-            status:''
+          projectSubject:'',
+          projectCode:''
         }
         this.fetchList()
       },
@@ -215,32 +223,32 @@
       fetchList () {
         this.loading = true
         let searchParams ={}
-        if(this.searchData.subject){
-          searchParams.subject = this.searchData.subject
+        if(this.searchData.projectSubject){
+          searchParams.projectSubject = this.searchData.projectSubject
         }
-        if(this.searchData.status){
-          searchParams.status = this.searchData.status
+        if(this.searchData.projectCode){
+          searchParams.projectCode = this.searchData.projectCode
         }
-        FetchUser('get',Object.assign({
+        FetchContractNotice('get',Object.assign({
           currentPage: this.pageInfo.currentPage || 1,
-          pageSize: this.pageInfo.pageSize,
-          isDelete:2
+          pageSize: this.pageInfo.pageSize
         }, searchParams)).then((res) => {
-           this.resultTemplateDtos = res.resultTemplateDtos;
-          this.pageInfo = {
-            ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.currentPage
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.contractNoticceDtos = respondData.contractNoticceDtos;
+            this.pageInfo = {
+              ...this.pageInfo,
+              total: respondData.statistics.totalSize,
+              currentPage: respondData.statistics.currentPage
+            }
+            this.loading = false
           }
-          this.loading = false
 
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
           })
         })
       },
@@ -255,19 +263,19 @@
         return  row.status === 1 ? '激活' : '冻结';
       },
       formatterTime (row, column) {
-        if(column.property === 'maintenanceDate'){
-          return  util.formatTime(row.maintenanceDate)
+        if(column.property === 'signDate'){
+          return  row.signDate ? util.formatTime(row.signDate) :''
         }else if(column.property === 'createDate'){
-          return  util.formatTime(row.createDate)
+          return row.createDate ? util.formatTime(row.createDate) :''
         }
       },
-      handleEdit (index, row) {
+      handleView (index, row) {
         if(this.multipleSelection.length === 1){
-          this.$router.push({ name: '/system/user-edit' , params: { cargoId: this.multipleSelection[0].cargoId }})
+          this.$router.push({ name: 'contract-view' , params: { contractId: this.multipleSelection[0].contractId }})
         }else{
           this.$message({
             type: 'info',
-            message: '请选择一条需要查看/编辑的数据！'
+            message: '请选择一条需要查看的数据！'
           })
         }
       },
@@ -278,21 +286,17 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            FetchUser('delete', this.multipleSelection[0].cargoId).then((res) => {
+            FetchUser('delete', this.multipleSelection[0].contractId).then((res) => {
               this.$message({
                 message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
+                type: 'success'
               })
               this.fetchList()
 
             }).catch((err) => {
-              this.loading = false
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }).catch(() => {
@@ -329,13 +333,26 @@
         }
         this.fetchList()
       },
-      handleAdd () {
-        // this.boxParams ={ type: 'add',data:{}}
-        // this.dialogVisible = true
-        this.$router.push({ path: '/system/user-add' })
-      },
       hideDialog () {
         this.dialogVisible = false
+      },
+      /**
+       * 下载图片
+       * */
+      handleDownloadPhoto (fileData) {
+        util.download('/download/' + fileData.attachId)
+      },
+      /**
+       * 导出列表
+       * 不传默认导出所有数据
+       * 导出数据
+       */
+      handleExport (){
+        let contractNoticeIds =[]
+        this.multipleSelection.forEach(item =>{
+          contractNoticeIds.push(item.contractId)
+        })
+        util.download('/contractNotice/export',contractNoticeIds.length ? contractNoticeIds :'','POST')
       }
     },
   }

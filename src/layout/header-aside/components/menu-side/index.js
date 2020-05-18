@@ -61,7 +61,6 @@ export default {
   },
   mounted () {
     this.scrollInit()
-    console.log(5555, this.$route.path)
   },
   beforeDestroy () {
     this.scrollDestroy()

@@ -14,7 +14,7 @@ process.env.VUE_APP_BUILD_TIME = require('dayjs')().format('YYYY-M-D HH:mm:ss')
 
 // 基础路径 注意发布之前要先修改这里
 let publicPath = process.env.VUE_APP_PUBLIC_PATH || '/'
-
+// let publicPath = '/protocol_supply/' // build 根目录
 // 设置不参与构建的库
 let externals = {}
 cdnDependencies.forEach(pkg => { externals[pkg.name] = pkg.library })
@@ -49,12 +49,13 @@ module.exports = {
     hotOnly: false, // 热更新（webpack已实现了，这里false即可）
     proxy: {
       // 配置跨域
-      '/scms': {
-        target: 'http://47.105.181.143:8780',
+      '/api': {
+        // target: 'http://47.105.181.143:8780',
+        target: 'http://192.168.8.152:8780',
         ws: true,
         changOrigin: true,
         pathRewrite: {
-          '^/scms': '/api'
+          '^/api': '/api'
         }
       }
     }
@@ -183,14 +184,5 @@ module.exports = {
     }
   },
   // 不输出 map 文件
-  productionSourceMap: false,
-  // i18n
-  pluginOptions: {
-    i18n: {
-      locale: 'zh-chs',
-      fallbackLocale: 'en',
-      localeDir: 'locales',
-      enableInSFC: true
-    }
-  }
+  productionSourceMap: false
 }

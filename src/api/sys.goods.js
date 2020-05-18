@@ -18,9 +18,9 @@ export function FetchBrand (data) {
  * @param data
  * @constructor
  */
-export function PartInfoUpload (data) {
+export function PartInfoUpload (data, cargoId) {
   return request({
-    url: '/partInfo/upLoad',
+    url: '/partInfo/upLoad?cargoId=' + cargoId,
     method: 'post',
     processData: false,
     contentType: false,
@@ -89,7 +89,8 @@ export function FetchCargoInfo (method, data, edit = false) {
         requestObj.data = data
         break
       case 'delete':
-        requestObj.url = '/cargoInfo/' + data
+        requestObj.method = 'put'
+        requestObj.data = data
         break
     }
   }
@@ -106,5 +107,20 @@ export function FetchDownloadTemplate (data) {
     url: '/cargoInfo/export',
     method: 'get',
     params: data
+  })
+}
+
+/**
+ * 货物导入
+ * @param data
+ * @constructor
+ */
+export function FetchUpLoadCargoInfo (data) {
+  return request({
+    url: '/cargoInfo/upLoad',
+    method: 'post',
+    processData: false,
+    contentType: false,
+    data
   })
 }

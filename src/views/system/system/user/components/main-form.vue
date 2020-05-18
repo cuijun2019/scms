@@ -5,7 +5,7 @@
       <span class="header-title">基本信息</span>
     </div>
     <div class="custom-form-con con-center">
-        <el-form :model="form" :rules="rules" ref="form" label-width="110px"  size="mini" class="form-480">
+        <el-form :model="form" :rules="rules" ref="form" label-width="110px"  size="medium" class="form-480">
           <div class="form-container">
             <el-form-item label="用户名：" prop="username">
               <el-input v-model="form.username" placeholder="admin" :disabled="listParams.type === 2 ? true : false" clearable required></el-input>
@@ -14,7 +14,7 @@
               <el-input v-model="form.fullname"  placeholder="管理员"  clearable required ></el-input>
             </el-form-item>
             <el-form-item label="密码：" prop="password">
-              <el-input v-model="form.password" placeholder="密码" clearable required></el-input>
+              <el-input v-model="form.password" placeholder="密码" type="password" auto-complete="new-password" clearable required></el-input>
             </el-form-item>
             <el-form-item label="性别：" prop="sex">
               <el-select v-model="form.sex" placeholder="请选择性别" clearable required>
@@ -52,9 +52,9 @@
               </el-select>
             </el-form-item>
             <el-form-item class="custom-form-btn">
-              <el-button class="form-submit-btn btn-width-90" @click="submitForm('form')">保存</el-button>
-              <el-button class="form-reset-btn btn-width-90" @click="handleResetForm">重置</el-button>
-              <el-button class="form-close-btn btn-width-90" @click="handleClose">关闭</el-button>
+              <el-button class="form-submit-btn btn-width-120" @click="submitForm('form')">保存</el-button>
+              <!--<el-button class="form-reset-btn btn-width-120" @click="handleResetForm">重置</el-button>-->
+              <el-button class="form-close-btn btn-width-120" @click="handleClose">关闭</el-button>
             </el-form-item>
           </div>
         </el-form>
@@ -64,10 +64,7 @@
 
 <script>
 
-import {
-  FetchUser,
-  FetchUpdateUser
-} from '@/api/sys.system'
+import { FetchUser, FetchUpdateUser } from '@/api/sys.system'
 import util from '@/libs/util'
 import { mapState, mapActions } from 'vuex'
 export default {
@@ -159,18 +156,7 @@ export default {
     listParams: {
       immediate: true, // 这句重要
       handler (val) {
-        if (val) {
-          // switch (val.type) {
-          //   case 1:
-          //     this.$set(this.columns, 0, { title: '待办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '待办主题', key: 'name' })
-          //     break
-          //   case 2:
-          //     this.$set(this.columns, 0, { title: '已办类型', key: 'date' })
-          //     this.$set(this.columns, 1, { title: '已办主题', key: 'name' })
-          //     break
-          // }
-        }
+        if (val) {}
       }
 
     }
@@ -188,24 +174,23 @@ export default {
     ]),
     fetchDetailData (id) {
       FetchUser('get', id, true).then((res) => {
-        console.log('=====获取用户详情', res)
-        this.form = res
-        let roles = []
-        res.roles.forEach(item => {
-          roles.push(item.id)
-        })
-        this.form.roles = roles
+        if (res.message === 'success') {
+          let respondData = res.data
+          this.form = respondData
+          let roles = []
+          respondData.roles.forEach(item => {
+            roles.push(item.id)
+          })
+          this.form.roles = roles
+        }
       }).catch((err) => {
-        // 显示提示
         this.$message({
           message: err.message,
-          type: 'error',
-          duration: 5 * 1000
+          type: 'error'
         })
       })
     },
     submitForm (formName) {
-      console.log('=========3333333', this.form.roles)
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let roles = []
@@ -228,50 +213,36 @@ export default {
             update_time: '2020-04-01',
             roles: roles
           }
-          console.log('====33', params)
           if (this.listParams.type === 1) { // 新增用户
             FetchUser('post', params).then((res) => {
               this.$message({
-                message: '新建用户成功！',
-                type: 'success',
-                duration: 3 * 1000
+                message: res.message,
+                type: 'success'
               })
               this.resetForm('form')
-              this.$store.dispatch('d2admin/menu/headerActivePathSet', '/system')
-              this.$router.push({ path: '/system/user' })
-              let tagName = this.current
-              this.close({ tagName })
+              this.handleClose()
             }).catch((err) => {
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           } else if (this.listParams.type === 2) { // 编辑用户
             params.id = this.$route.params.id
             FetchUpdateUser(params).then((res) => {
               this.$message({
-                message: '修改用户信息成功',
-                type: 'success',
-                duration: 3 * 1000
+                message: res.message,
+                type: 'success'
               })
               this.resetForm('form')
-              this.$store.dispatch('d2admin/menu/headerActivePathSet', '/system')
-              this.$router.push({ path: '/system/user' })
+              this.handleClose()
             }).catch((err) => {
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     },
@@ -282,6 +253,8 @@ export default {
       this.resetForm('form')
     },
     handleClose () {
+      this.$store.dispatch('d2admin/menu/headerActivePathSet', '/system')
+      this.$router.push({ path: '/system/user' })
       let tagName = this.current
       this.close({ tagName })
     }

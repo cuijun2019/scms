@@ -3,9 +3,6 @@
   <d2-container class="page">
     <div class="list-container">
       <div class="list-wrapper">
-        <!--<div class="list-header">-->
-        <!--<span class="list-header-title">已办列表</span>-->
-        <!--</div>-->
         <div class="list-search">
           <div class="search-container">
             <el-collapse v-model="activeNames">
@@ -15,33 +12,32 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
                         <label>项目主题:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
-                          v-model="searchData.subject"
+                          v-model="searchData.projectSubject"
                           clearable>
                         </el-input>
                       </li>
                       <li class="search-item">
                         <label>项目编号:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
-                          v-model="searchData.subject"
+                          v-model="searchData.projectCode"
                           clearable>
                         </el-input>
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn"  @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn"  @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -56,28 +52,26 @@
               <span class="list-title">列表</span>
             </div>
             <div class="table-tool-btn">
-              <!--<el-button size="mini" class="tool-basic-btn" @click="handleAdd">新建</el-button>-->
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看</el-button>
-              <el-button class="tool-export-btn" size="mini" @click="handleDownload">导出</el-button>
-              <!--<el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>-->
-              <!--<el-button size="mini" class="tool-roles-btn" >角色配置</el-button>-->
+              <el-button size="mini" class="tool-edit-btn" @click="handleView">查看</el-button>
+              <el-button class="tool-export-btn" size="mini" @click="handleExport">导出</el-button>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
-              :data="resultTemplateDtos"
+              :data="bidNoticeDtos"
               @selection-change="handleSelectionChange">
               <el-table-column
                 fixed
                 label="序号"
                 type="index"
                 align="center"
-                width="50">
+                width="50"
+                :index="indexMethod">
               </el-table-column>
               <el-table-column
                 fixed
@@ -86,69 +80,61 @@
                 width="55">
               </el-table-column>
               <el-table-column
-                prop="resultTemplateSubject"
+                prop="projectSubject"
                 label="项目主题"
                 align="center"
-                width="210">
+                width="280">
               </el-table-column>
               <el-table-column
-                prop="status"
+                prop="projectCode"
                 label="项目编号"
                 align="center"
-                width="120">
+                width="280">
               </el-table-column>
               <el-table-column
-                prop="status"
+                prop="attachment.attachName"
                 label="成交通知书"
-                align="center">
+                align="center"
+                width="320">
+                <template slot-scope="scope">
+                  <el-link style="font-size: 12px;" :underline="false" type="primary" @click="handleDownloadPhoto(scope.row.attachment)">{{scope.row.attachment ? scope.row.attachment.attachName :''}}</el-link>
+                </template>
               </el-table-column>
               <el-table-column
-                prop="attachId"
+                prop="supplier"
                 label="成交代理商"
                 align="center"
                 width="210">
               </el-table-column>
               <el-table-column
-                prop="creator"
+                prop="amount"
                 label="成交金额"
                 align="center"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
-                prop="createDate"
-                label="采购人"
-                align="center"
-                width="150">
-              </el-table-column>
-              <el-table-column
-                prop="createDate"
-                label="采购单位"
-                align="center"
-                width="150">
-              </el-table-column>
-              <el-table-column
-                prop="maintenanceDate"
+                prop="signDate"
                 label="签收时间"
-                width="150"
+                width="180"
                 align="center"
                 :formatter="formatterTime">
               </el-table-column>
               <el-table-column
-                prop="createDate"
+                prop="creator"
                 label="创建人"
-                align="center"
-                width="150">
+                align="center">
               </el-table-column>
               <el-table-column
-                prop="maintenanceMan"
+                prop="createDate"
                 label="创建时间"
                 align="center"
-                width="120"
+                width="250"
                 :formatter="formatterTime">
               </el-table-column>
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -168,8 +154,8 @@
 
 <script>
   import {
-    FetchUser
-  } from '@/api/sys.system'
+    FetchBidsNotice
+  } from '@/api/sys.bids'
   import util from '@/libs/util'
   import { mapActions } from 'vuex'
   export default {
@@ -187,10 +173,10 @@
             label: '冻结'
           }],
         searchData:{
-          subject:'',
-          status:''
+          projectSubject:'',
+          projectCode:''
         },
-        resultTemplateDtos: [],
+        bidNoticeDtos: [],
         loading: false,
         pageInfo: {
           pageSize: this.GLOBAL.pageSize,
@@ -206,18 +192,21 @@
       this.fetchList()
     },
     mounted () {
-      // this.$nextTick(() => { // 关闭当前右侧的 tab 页
-      //   this.closeRight({pageSelect: '/system/user'})
-      // })
+      this.$nextTick(() => { // 关闭当前右侧的 tab 页
+        this.closeRight({pageSelect: '/bids/list'})
+      })
     },
     methods: {
       ...mapActions('d2admin/page', [
         'closeRight'
       ]),
+      indexMethod (index) {
+        return index + (this.pageInfo.currentPage - 1) * this.pageInfo.pageSize + 1
+      },
       handleClear () {
         this.searchData ={
-          subject:'',
-          status:''
+          projectSubject:'',
+          projectCode:''
         }
         this.fetchList()
       },
@@ -227,32 +216,32 @@
       fetchList () {
         this.loading = true
         let searchParams ={}
-        if(this.searchData.subject){
-          searchParams.subject = this.searchData.subject
+        if(this.searchData.projectSubject){
+          searchParams.projectSubject = this.searchData.projectSubject
         }
-        if(this.searchData.status){
-          searchParams.status = this.searchData.status
+        if(this.searchData.projectCode){
+          searchParams.projectCode = this.searchData.projectCode
         }
-        FetchUser('get',Object.assign({
+        FetchBidsNotice('get',Object.assign({
           currentPage: this.pageInfo.currentPage || 1,
           pageSize: this.pageInfo.pageSize,
           isDelete:2
         }, searchParams)).then((res) => {
-          this.resultTemplateDtos = res.resultTemplateDtos;
-          this.pageInfo = {
-            ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.currentPage
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.bidNoticeDtos = respondData.bidNoticeDtos;
+            this.pageInfo = {
+              ...this.pageInfo,
+              total: respondData.statistics.totalSize,
+              currentPage: respondData.statistics.currentPage
+            }
+            this.loading = false
           }
-          this.loading = false
-
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
           })
         })
       },
@@ -267,19 +256,19 @@
         return  row.status === 1 ? '激活' : '冻结';
       },
       formatterTime (row, column) {
-        if(column.property === 'maintenanceDate'){
-          return  util.formatTime(row.maintenanceDate)
+        if(column.property === 'signDate'){
+          return  row.signDate ? util.formatTime(row.signDate) :''
         }else if(column.property === 'createDate'){
-          return  util.formatTime(row.createDate)
+          return  row.createDate ? util.formatTime(row.createDate) :''
         }
       },
-      handleEdit (index, row) {
+      handleView (index, row) {
         if(this.multipleSelection.length === 1){
-          this.$router.push({ name: '/system/user-edit' , params: { cargoId: this.multipleSelection[0].cargoId }})
+          this.$router.push({ name: 'bids-view' , params: { bidId: this.multipleSelection[0].bidId }})
         }else{
           this.$message({
             type: 'info',
-            message: '请选择一条需要查看/编辑的数据！'
+            message: '请选择一条需要查看的数据！'
           })
         }
       },
@@ -290,21 +279,17 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            FetchUser('delete', this.multipleSelection[0].cargoId).then((res) => {
+            FetchUser('delete', this.multipleSelection[0].bidId).then((res) => {
               this.$message({
                 message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
+                type: 'success'
               })
               this.fetchList()
 
             }).catch((err) => {
-              this.loading = false
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }).catch(() => {
@@ -341,13 +326,23 @@
         }
         this.fetchList()
       },
-      handleAdd () {
-        // this.boxParams ={ type: 'add',data:{}}
-        // this.dialogVisible = true
-        this.$router.push({ path: '/system/user-add' })
+      /**
+       * 下载图片
+       * */
+      handleDownloadPhoto (fileData) {
+        util.download('/download/' + fileData.attachId)
       },
-      hideDialog () {
-        this.dialogVisible = false
+      /**
+       * 导出列表
+       * 不传默认导出所有数据
+       * 导出数据
+       */
+      handleExport (){
+        let bidNoticeIds =[]
+        this.multipleSelection.forEach(item =>{
+          bidNoticeIds.push(item.bidId)
+        })
+        util.download('/bidNotice/export',bidNoticeIds.length ? bidNoticeIds :'','POST')
       }
     },
   }

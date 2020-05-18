@@ -1,7 +1,6 @@
 import layoutHeaderAside from '@/layout/header-aside'
 import flow from './modules/flow'
-import news from './modules/news'
-import plans from './modules/plans'
+import index from './modules/index'
 import prices from './modules/prices'
 import bids from './modules/bids'
 import template from './modules/template'
@@ -11,7 +10,7 @@ import supplier from './modules/supplier'
 import agent from './modules/agent'
 import goods from './modules/goods'
 import projects from './modules/projects'
-import purchaseResults from './modules/purchaseResults'
+import purchase from './modules/purchase'
 
 // 由于懒加载页面太多的话会造成webpack热更新太慢，所以开发环境不使用懒加载，只有生产环境使用懒加载
 const _import = require('@/libs/util.import.' + process.env.NODE_ENV)
@@ -22,7 +21,10 @@ const _import = require('@/libs/util.import.' + process.env.NODE_ENV)
 const frameIn = [
   {
     path: '/',
-    redirect: { name: 'index' },
+    // redirect: { name: 'index' },
+    meta: {
+      auth: true
+    },
     component: layoutHeaderAside,
     children: [
       // 首页
@@ -62,8 +64,7 @@ const frameIn = [
     ]
   },
   flow,
-  news,
-  plans,
+  index,
   prices,
   bids,
   template,
@@ -73,7 +74,7 @@ const frameIn = [
   agent,
   goods,
   projects,
-  purchaseResults
+  purchase
 ]
 
 /**
@@ -90,6 +91,11 @@ const frameOut = [
     path: '/register',
     name: 'register',
     component: _import('system/register')
+  },
+  {
+    path: '/forgot',
+    name: 'forgot',
+    component: _import('system/forgot')
   }
 ]
 

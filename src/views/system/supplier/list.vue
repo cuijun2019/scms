@@ -3,9 +3,6 @@
   <d2-container class="page">
     <div class="list-container">
       <div class="list-wrapper">
-        <!--<div class="list-header">-->
-        <!--<span class="list-header-title">已办列表</span>-->
-        <!--</div>-->
         <div class="list-search">
           <div class="search-container">
             <el-collapse v-model="activeNames">
@@ -15,34 +12,22 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
-                        <label>供应商类型:</label>
-                        <el-select class="search-input" v-model="searchData.status" clearable placeholder="请选择" size="mini">
-                          <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                          </el-option>
-                        </el-select>
-                      </li>
-                      <li class="search-item">
-                        <label>厂家名称:</label>
+                        <label>供应商名称:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
-                          placeholder="请输入内容"
-                          v-model="searchData.subject"
+                          placeholder="请填写供应商名称"
+                          v-model="searchData.supplierName"
                           clearable>
                         </el-input>
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn"  @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn"  @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -56,27 +41,30 @@
               <i class="list-icon"></i>
               <span class="list-title">列表</span>
             </div>
-            <div class="table-tool-btn">
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看</el-button>
-              <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
-              <el-button size="mini" class="tool-export-btn" >导出</el-button>
+            <div class="table-tool-btn" v-if="currentRouterData">
+              <div class="btn-con" v-for="(item, index) in currentRouterData.menuBtn" >
+                <el-button v-if="item.menuCode =='supplierCheck' " size="mini" class="tool-edit-btn" @click="handleEdit">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='supplierDelete'" size="mini" class="tool-delete-btn" @click="handleDelete">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='supplierExport'" size="mini" class="tool-export-btn" @click="handleExport">{{item.menuName}}</el-button>
+              </div>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
-              :data="resultTemplateDtos"
+              :data="partnerInfoDtos"
               @selection-change="handleSelectionChange">
               <el-table-column
                 fixed
                 label="序号"
                 type="index"
                 align="center"
-                width="50">
+                width="50"
+                :index="indexMethod">
               </el-table-column>
               <el-table-column
                 fixed
@@ -85,16 +73,16 @@
                 width="55">
               </el-table-column>
               <el-table-column
-                prop="resultTemplateSubject"
+                prop="companyNo"
                 label="厂家名称"
                 align="center"
-                width="210">
+                width="250">
               </el-table-column>
               <el-table-column
-                prop="status"
+                prop="incorporator"
                 label="法人代表"
                 align="center"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="status"
@@ -104,24 +92,25 @@
               <el-table-column
                 prop="attachId"
                 label="联系电话"
-                width="210"
+                width="250"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="creator"
                 label="邮箱"
-                width="120"
+                width="180"
                 align="center">
               </el-table-column>
               <el-table-column
-                prop="createDate"
+                prop="detailAddress"
                 label="邮寄地址"
-                width="150"
+                width="250"
                 align="center">
               </el-table-column>
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -136,21 +125,16 @@
         </div>
       </div>
     </div>
-    <modify-box :dialogVisible="dialogVisible" :boxParams="boxParams" @hideDialog="hideDialog" @fetchList="fetchList"/>
   </d2-container>
 </template>
 
 <script>
-  import modifyBox from './modify-box'
-  import {
-    FetchResultTemplate
-  } from '@/api/sys.template.purchase'//api
+  import {FetchSupplierInfo} from '@/api/sys.supplier'//api
   import util from '@/libs/util'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'supplier-list',
-    components: {
-      modifyBox
-    },
+    components: {},
     data () {
       return {
         filename: __filename,
@@ -168,10 +152,9 @@
             label: '代理商'
           }],
         searchData:{
-          subject:'',
-          status:''
+          supplierName:''
         },
-        resultTemplateDtos: [],
+        partnerInfoDtos: [],
         loading: false,
         pageInfo: {
           pageSize: this.GLOBAL.pageSize,
@@ -186,13 +169,28 @@
     created () {
       this.fetchList()
     },
+    mounted () {
+      this.$nextTick(() => { // 关闭当前右侧的 tab 页
+        this.closeRight({pageSelect: '/supplier/list'})
+      })
+    },
+    computed: {
+      ...mapState('d2admin/menu', [
+        'currentRouterData'
+      ])
+    },
     methods: {
+      ...mapActions('d2admin/page', [
+        'closeRight'
+      ]),
       handleClear () {
         this.searchData ={
-          subject:'',
-          status:''
+          supplierName:''
         }
         this.fetchList()
+      },
+      indexMethod (index) {
+        return index + (this.pageInfo.currentPage - 1) * this.pageInfo.pageSize + 1
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
@@ -200,32 +198,27 @@
       fetchList () {
         this.loading = true
         let searchParams ={}
-        if(this.searchData.subject){
-          searchParams.subject = this.searchData.subject
+        if(this.searchData.supplierName){
+          searchParams.supplierName = this.searchData.supplierName
         }
-        if(this.searchData.status){
-          searchParams.status = this.searchData.status
-        }
-        FetchResultTemplate('get',Object.assign({
+        FetchSupplierInfo('get',Object.assign({
           Page: this.pageInfo.currentPage || 1,
-          pageSize: this.pageInfo.pageSize,
-          isDelete:2
+          pageSize: this.pageInfo.pageSize
         }, searchParams)).then((res) => {
-          this.resultTemplateDtos = res.resultTemplateDtos;
-          this.pageInfo = {
-            ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.currentPage
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.partnerInfoDtos = respondData.partnerInfoDtos;
+            this.pageInfo = {
+              ...this.pageInfo,
+              total: respondData.statistics.totalSize,
+              currentPage: respondData.statistics.currentPage
+            }
+            this.loading = false
           }
-          this.loading = false
-
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
-            message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            message: err.message
           })
         })
       },
@@ -247,10 +240,8 @@
         }
       },
       handleEdit (index, row) {
-        // this.boxParams ={ type: 'edit',data:row}
-        // this.dialogVisible = true
         if(this.multipleSelection.length === 1){
-          this.$router.push({ name: '/supplier/user-edit' , params: { cargoId: this.multipleSelection[0].cargoId }})
+          this.$router.push({ name: 'supplier-view' , params: { partnerId: this.multipleSelection[0].partnerId }})
         }else{
           this.$message({
             type: 'info',
@@ -265,21 +256,17 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          FetchResultTemplate('delete',  this.multipleSelection[0].resultTemplateId).then((res) => {
+          FetchSupplierInfo('delete',  this.multipleSelection[0].partnerId).then((res) => {
             this.$message({
               message: '删除成功！',
-              type: 'success',
-              duration: 3 * 1000
+              type: 'success'
             })
             this.fetchList()
 
           }).catch((err) => {
-            this.loading = false
-            // 显示提示
             this.$message({
               message: err.message,
-              type: 'error',
-              duration: 5 * 1000
+              type: 'error'
             })
           })
         }).catch(() => {
@@ -320,8 +307,15 @@
         this.boxParams ={ type: 'add',data:{}}
         this.dialogVisible = true
       },
-      hideDialog () {
-        this.dialogVisible = false
+      /**
+       * 导出数据
+       */
+      handleExport () {
+        let supplierIds =[]
+        this.multipleSelection.forEach(item =>{
+          supplierIds.push(item.partnerId)
+        })
+        util.download('/supplier/export',supplierIds.length ? supplierIds :'','POST')
       }
     },
   }

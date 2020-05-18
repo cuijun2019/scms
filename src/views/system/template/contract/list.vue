@@ -3,9 +3,6 @@
   <d2-container class="page">
     <div class="list-container">
       <div class="list-wrapper">
-        <!--<div class="list-header">-->
-        <!--<span class="list-header-title">已办列表</span>-->
-        <!--</div>-->
         <div class="list-search">
           <div class="search-container">
             <el-collapse v-model="activeNames">
@@ -15,13 +12,12 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
                         <label>项目主题:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
                           v-model="searchData.subject"
@@ -30,7 +26,7 @@
                       </li>
                       <li class="search-item">
                         <label>项目编号:</label>
-                        <el-select class="search-input" v-model="searchData.status" clearable placeholder="请选择" size="mini">
+                        <el-select class="search-input" v-model="searchData.status" clearable placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in options"
                             :key="item.value"
@@ -41,8 +37,8 @@
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn" @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn" @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -56,18 +52,20 @@
               <i class="list-icon"></i>
               <span class="list-title">列表</span>
             </div>
-            <div class="table-tool-btn">
-              <el-button class="tool-basic-btn" size="mini" @click="handleAdd">新建</el-button>
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看/编辑</el-button>
-              <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
-              <el-button class="tool-export-btn" size="mini" >导出</el-button>
+            <div class="table-tool-btn" v-if="currentRouterData">
+              <div class="btn-con" v-for="(item, index) in currentRouterData.menuBtn" >
+                <el-button v-if="item.menuCode =='templateContractCreate' " class="tool-basic-btn" size="mini" @click="handleAdd">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='templateContractCheckOrEdit'"  size="mini" class="tool-edit-btn" @click="handleEdit">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='templateContractDelete'" size="mini" class="tool-delete-btn" @click="handleDelete">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='templateContractExport'" class="tool-export-btn" size="mini" @click="handleDownload">{{item.menuName}}</el-button>
+              </div>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
               :data="contractTemplateDtos"
@@ -76,8 +74,9 @@
                 fixed
                 label="序号"
                 type="index"
+                align="center"
                 width="50"
-                align="center">
+                :index="indexMethod">
               </el-table-column>
               <el-table-column
                 fixed
@@ -88,13 +87,13 @@
               <el-table-column
                 prop="contractTemplateSubject"
                 label="项目主题"
-                width="210"
+                width="280"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="status"
                 label="项目编号"
-                width="120"
+                width="280"
                 align="center">
               </el-table-column>
               <el-table-column
@@ -106,53 +105,42 @@
               <el-table-column
                 prop="attachment.attachName"
                 label="模板文件"
-                width="210"
+                width="320"
                 align="center">
                 <template slot-scope="scope">
-                  <el-link style="font-size: 12px;" :underline="false" type="primary">{{scope.row.attachment.attachName}}</el-link>
+                  <el-link style="font-size: 12px;" :underline="false" type="primary" @click="handleDownloadPhoto(scope.row.attachment)">{{scope.row.attachment.attachName}}</el-link>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="creator"
                 label="创建人"
-                width="120"
+                width="180"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="createDate"
                 label="创建时间"
-                width="150"
+                width="180"
                 align="center"
                 :formatter="formatterTime">
               </el-table-column>
               <el-table-column
                 prop="maintenanceMan"
                 label="最后维护人"
-                width="120"
+                width="180"
                 align="center">
               </el-table-column>
               <el-table-column
                 prop="maintenanceDate"
                 label="最后维护时间"
-                width="150"
+                width="180"
                 align="center"
                 :formatter="formatterTime">
               </el-table-column>
-              <!--<el-table-column label="操作"  width="150" fixed="right">-->
-                <!--<template slot-scope="scope">-->
-                  <!--<el-button-->
-                    <!--size="mini"-->
-                    <!--class="table-basic-btn"-->
-                    <!--@click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-                  <!--<el-button-->
-                    <!--size="mini"-->
-                    <!--type="danger"-->
-                    <!--@click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
-                <!--</template>-->
-              <!--</el-table-column>-->
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -167,21 +155,15 @@
         </div>
       </div>
     </div>
-    <modify-box :dialogVisible="dialogVisible" :boxParams="boxParams" @hideDialog="hideDialog" @fetchList="fetchList"/>
   </d2-container>
 </template>
 
 <script>
-  import modifyBox from './modify-box'
-  import {
-    FetchContractTemplate
-  } from '@/api/sys.template.contract'//api
+  import {FetchContractTemplate} from '@/api/sys.template.contract'//api
   import util from '@/libs/util'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'template-contract',
-    components: {
-      modifyBox
-    },
     data () {
       return {
         filename: __filename,
@@ -213,13 +195,29 @@
     created () {
       this.fetchList()
     },
+    mounted () {
+      this.$nextTick(() => { // 关闭当前右侧的 tab 页
+        this.closeRight({pageSelect: '/template/contract'})
+      })
+    },
+    computed: {
+      ...mapState('d2admin/menu', [
+        'currentRouterData'
+      ])
+    },
     methods: {
+      ...mapActions('d2admin/page', [
+        'closeRight'
+      ]),
       handleClear () {
         this.searchData ={
           subject:'',
           status:''
         }
         this.fetchList()
+      },
+      indexMethod (index) {
+        return index + (this.pageInfo.currentPage - 1) * this.pageInfo.pageSize + 1
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
@@ -238,21 +236,20 @@
           pageSize: this.pageInfo.pageSize,
           isDelete:2
         }, searchParams)).then((res) => {
-          this.contractTemplateDtos = res.contractTemplateDtos;
+          let respondData = res.data
+          this.contractTemplateDtos = respondData.contractTemplateDtos;
           this.pageInfo = {
             ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.currentPage
+            total: respondData.statistics.totalSize,
+            currentPage: respondData.currentPage
           }
           this.loading = false
 
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
           })
         })
       },
@@ -275,8 +272,7 @@
       },
       handleEdit (index, row) {
         if(this.multipleSelection.length === 1){
-          this.boxParams ={ type: 'edit',data:this.multipleSelection[0]}
-          this.dialogVisible = true
+          this.$router.push({ name: 'template-contract-edit' , params: { contractTemplateId: this.multipleSelection[0].contractTemplateId }})
         }else{
           this.$message({
             type: 'info',
@@ -294,8 +290,7 @@
           FetchContractTemplate('delete', this.multipleSelection[0].contractTemplateId).then((res) => {
             this.$message({
               message: '删除成功！',
-              type: 'success',
-              duration: 3 * 1000
+              type: 'success'
             })
             this.fetchList()
 
@@ -304,8 +299,7 @@
             // 显示提示
             this.$message({
               message: err.message,
-              type: 'error',
-              duration: 5 * 1000
+              type: 'error'
             })
           })
         }).catch(() => {
@@ -343,12 +337,20 @@
         this.fetchList()
       },
       handleAdd () {
-        this.boxParams ={ type: 'add',data:{}}
-        this.dialogVisible = true
+        this.$router.push({ path: '/template/contract-add' })
       },
-      hideDialog () {
-        this.dialogVisible = false
-      }
+      /**
+       * 下载图片
+       * */
+      handleDownloadPhoto (fileData) {
+        util.download('/download/' + fileData.attachId)
+      },
+      /**
+       * 导出
+       */
+      handleDownload () {
+        util.download('/cargoInfo/export')
+      },
     },
   }
 </script>

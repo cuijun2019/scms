@@ -3,9 +3,6 @@
   <d2-container class="page">
     <div class="list-container">
       <div class="list-wrapper">
-        <!--<div class="list-header">-->
-        <!--<span class="list-header-title">已办列表</span>-->
-        <!--</div>-->
         <div class="list-search">
           <div class="search-container">
             <el-collapse v-model="activeNames">
@@ -15,13 +12,12 @@
                   <span class="search-title">查询条件</span>
                 </template>
                 <div class="search-container">
-                  <!--<p class="search-title">列表检索条件</p>-->
                   <div class="search-content">
                     <ul class="search-con">
                       <li class="search-item">
                         <label>用户名:</label>
                         <el-input
-                          size="mini"
+                          size="medium"
                           class="search-input"
                           placeholder="请输入内容"
                           v-model="searchData.username"
@@ -30,7 +26,7 @@
                       </li>
                       <li class="search-item">
                         <label>状态:</label>
-                        <el-select class="search-input" v-model="searchData.enabled" clearable placeholder="请选择" size="mini">
+                        <el-select class="search-input" v-model="searchData.enabled" clearable placeholder="请选择" size="medium">
                           <el-option
                             v-for="item in options"
                             :key="item.value"
@@ -41,8 +37,8 @@
                       </li>
                     </ul>
                     <div class="search-btn">
-                      <el-button class="basic-btn" size="mini" @click="fetchList">查询</el-button>
-                      <el-button class="clear-btn" size="mini" @click="handleClear">清空</el-button>
+                      <el-button class="basic-btn" @click="fetchList">查询</el-button>
+                      <el-button class="clear-btn" @click="handleClear">清空</el-button>
                     </div>
                   </div>
                 </div>
@@ -56,35 +52,38 @@
               <i class="list-icon"></i>
               <span class="list-title">列表</span>
             </div>
-            <div class="table-tool-btn">
-              <el-button size="mini" class="tool-basic-btn" @click="handleAdd">新建</el-button>
-              <el-button size="mini" class="tool-edit-btn" @click="handleEdit">查看/编辑</el-button>
-              <el-button size="mini" class="tool-delete-btn" @click="handleDelete">删除</el-button>
-              <el-popover
-                placement="left"
-                width="180"
-                trigger="manual"
-                v-model="visible"
+            <div class="table-tool-btn" v-if="currentRouterData">
+              <div class="btn-con" v-for="(item, index) in currentRouterData.menuBtn" >
+                <el-button v-if="item.menuCode =='systemUserCreate' " class="tool-basic-btn" size="mini" @click="handleAdd">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='systemUserCheckOrEdit'"  size="mini" class="tool-edit-btn" @click="handleEdit">{{item.menuName}}</el-button>
+                <el-button v-else-if="item.menuCode =='systemUserDelete'" size="mini" class="tool-delete-btn" @click="handleDelete">{{item.menuName}}</el-button>
+                <el-popover
+                  placement="left"
+                  width="180"
+                  trigger="manual"
+                  v-model="visible"
+                  v-else-if="item.menuCode =='systemUserRoles'"
                 >
-                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-                <el-checkbox v-model="invertSelect" @change="handleInvertSelect">反选</el-checkbox>
-                <div style="margin: 15px 0;"></div>
-                <el-checkbox-group class="role-con" v-model="checkedRoles" @change="handleCheckedRolesChange">
-                  <el-checkbox v-for="item in GLOBAL.roleType" :label="item.value" :key="item.value">{{item.name}}</el-checkbox>
-                </el-checkbox-group>
-                <div class="role-btn">
-                  <el-button size="mini" class="save-btn" @click="handleChangeUserRole">保存</el-button>
-                  <el-button size="mini" class="close-btn" @click="handleCloseUserRole">关闭</el-button>
-                </div>
-                <el-button size="mini" class="tool-roles-btn" slot="reference"  @click="handleEditRoles">角色配置</el-button>
-              </el-popover>
+                  <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                  <el-checkbox v-model="invertSelect" @change="handleInvertSelect">反选</el-checkbox>
+                  <div style="margin: 15px 0;"></div>
+                  <el-checkbox-group class="role-con" v-model="checkedRoles" @change="handleCheckedRolesChange">
+                    <el-checkbox v-for="item in roleType" :label="item.id" :key="item.value">{{item.name}}</el-checkbox>
+                  </el-checkbox-group>
+                  <div class="role-btn">
+                    <el-button size="mini" class="save-btn" @click="handleChangeUserRole">保存</el-button>
+                    <el-button size="mini" class="close-btn" @click="handleCloseUserRole">关闭</el-button>
+                  </div>
+                  <el-button size="mini" class="tool-roles-btn" slot="reference"  @click="handleEditRoles">{{item.menuName}}</el-button>
+                </el-popover>
+              </div>
             </div>
           </div>
           <div class="table-wrapper">
             <el-table
               :loading="loading"
               border
-              size="mini"
+              size="medium"
               :row-class-name="tableRowClassName"
               height="90%"
               :data="userDtos"
@@ -107,13 +106,13 @@
                 prop="username"
                 label="用户名"
                 align="center"
-                width="120">
+                width="280">
               </el-table-column>
               <el-table-column
                 prop="fullname"
                 label="用户姓名"
                 align="center"
-                width="150">
+                width="250">
               </el-table-column>
               <el-table-column
                 prop="sex"
@@ -124,25 +123,24 @@
                 prop="company"
                 label="所在公司"
                 align="center"
-                width="210">
+                width="280">
               </el-table-column>
               <el-table-column
                 prop="telephone"
                 label="联系电话"
                 align="center"
-                width="120">
+                width="180">
               </el-table-column>
               <el-table-column
                 prop="email"
                 label="邮箱"
                 align="center"
-                width="150">
+                width="250">
               </el-table-column>
               <el-table-column
                 prop="enabled"
                 label="状态"
-                align="center"
-                width="120">
+                align="center">
                 <template slot-scope="scope">
                   <p>{{scope.row.enabled ? '激活' : '冻结'}}</p>
                 </template>
@@ -166,6 +164,7 @@
             </el-table>
             <div class="table-paging">
               <el-pagination
+                background
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :current-page="pageInfo.currentPage"
@@ -180,23 +179,16 @@
         </div>
       </div>
     </div>
-    <modify-box :dialogVisible="dialogVisible" :boxParams="boxParams" @hideDialog="hideDialog" @fetchList="fetchList"/>
   </d2-container>
 </template>
 
 <script>
-  import modifyBox from './modify-box'
-  import {
-    FetchUser,
-    FetchChangeUserRole
-  } from '@/api/sys.system'
+  import {FetchUser, FetchChangeUserRole, FetchGetAllRoles} from '@/api/sys.system'
   import util from '@/libs/util'
-  import { mapActions } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   export default {
     name: 'system-user',
-    components: {
-      modifyBox
-    },
+    components: {},
     data () {
       return {
         filename: __filename,
@@ -220,6 +212,7 @@
           total: 0,
           currentPage: 1
         },
+        roleType:[],
         boxParams: {},
         dialogVisible: false,
         multipleSelection: [],
@@ -233,11 +226,17 @@
     },
     created () {
       this.fetchList()
+      this.fetchGetAllRoles()
     },
     mounted () {
       this.$nextTick(() => { // 关闭当前右侧的 tab 页
         this.closeRight({pageSelect: '/system/user'})
       })
+    },
+    computed: {
+      ...mapState('d2admin/menu', [
+        'currentRouterData'
+      ])
     },
     methods: {
       ...mapActions('d2admin/page', [
@@ -254,7 +253,7 @@
         this.fetchList()
       },
       handleSelectionChange(val) {
-        this.multipleSelection = val;
+        this.multipleSelection = val
       },
 
       fetchList () {
@@ -271,21 +270,35 @@
           pageSize: this.pageInfo.pageSize,
           isDelete:2
         }, searchParams)).then((res) => {
-           this.userDtos = res.userDtos;
-          this.pageInfo = {
-            ...this.pageInfo,
-            total: res.statistics.totalSize,
-            currentPage: res.statistics.currentPage
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.userDtos = respondData.userDtos;
+            this.pageInfo = {
+              ...this.pageInfo,
+              total: respondData.statistics.totalSize,
+              currentPage: respondData.statistics.currentPage
+            }
+            this.loading = false
           }
-          this.loading = false
 
         }).catch((err) => {
           this.loading = false
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
+          })
+        })
+      },
+      fetchGetAllRoles(){
+        FetchGetAllRoles().then((res) => {
+          if (res.message === 'success') {
+            let respondData = res.data
+            this.roleType = respondData
+          }
+        }).catch((err) => {
+          this.$message({
+            message: err.message,
+            type: 'error'
           })
         })
       },
@@ -323,18 +336,15 @@
             FetchUser('delete', this.multipleSelection[0].id).then((res) => {
               this.$message({
                 message: '删除成功！',
-                type: 'success',
-                duration: 3 * 1000
+                type: 'success'
               })
               this.fetchList()
 
             }).catch((err) => {
               this.loading = false
-              // 显示提示
               this.$message({
                 message: err.message,
-                type: 'error',
-                duration: 5 * 1000
+                type: 'error'
               })
             })
           }).catch(() => {
@@ -355,20 +365,20 @@
        * 角色配置
        * */
       handleCheckAllChange(val) {
-        this.checkedRoles = val ?  this.GLOBAL.roleType.map(c => c.value) : [];
+        this.checkedRoles = val ?  this.roleType.map(c => c.id) : [];
         this.invertSelect = false;
         this.isIndeterminate = false;
       },
       handleCheckedRolesChange(value) {
         this.invertSelect = false;
-        this.checkAll = this.checkedRoles.length === this.GLOBAL.roleType.length
-        this.isIndeterminate = 0 < this.checkedRoles.length && this.checkedRoles.length < this.GLOBAL.roleType.length
+        this.checkAll = this.checkedRoles.length === this.roleType.length
+        this.isIndeterminate = 0 < this.checkedRoles.length && this.checkedRoles.length < this.roleType.length
 
       },
       handleInvertSelect(val) {
-        this.checkedRoles = this.GLOBAL.roleType
-          .filter(item => !this.checkedRoles.includes(item.value))
-          .map(c => c.value);
+        this.checkedRoles = this.roleType
+          .filter(item => !this.checkedRoles.includes(item.id))
+          .map(c => c.id);
       },
       handleEditRoles(){
         if(this.multipleSelection.length === 1){
@@ -392,21 +402,20 @@
         let roleStr =  this.checkedRoles.join(',');
         this.checkedRoles.length === 0 ? roleStr = 0 :''
         FetchChangeUserRole(this.currentData.id,roleStr).then((res) => {
-          this.$message({
-            message: '修改用户角色成功！',
-            type: 'success',
-            duration: 3 * 1000
-          })
-          this.visible = false
-          this.currentData = {}
-          this.checkedRoles = []
-          this.fetchList()
+          if (res.message === 'success') {
+            this.$message({
+              message: '修改用户角色成功！',
+              type: 'success'
+            })
+            this.visible = false
+            this.currentData = {}
+            this.checkedRoles = []
+            this.fetchList()
+          }
         }).catch((err) => {
-          // 显示提示
           this.$message({
             message: err.message,
-            type: 'error',
-            duration: 5 * 1000
+            type: 'error'
           })
         })
       },
@@ -436,12 +445,7 @@
         this.fetchList()
       },
       handleAdd () {
-        // this.boxParams ={ type: 'add',data:{}}
-        // this.dialogVisible = true
         this.$router.push({ path: '/system/user-add' })
-      },
-      hideDialog () {
-        this.dialogVisible = false
       }
     },
   }
